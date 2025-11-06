@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.U2D;
 
 public class JesusnakeScript : MonoBehaviour
 {
@@ -21,11 +22,29 @@ public class JesusnakeScript : MonoBehaviour
     public Sprite rightUpCorner;
     string orientation;
     string lastOrientation;
-    bool firstCorner1 = true;
-    bool firstCorner2 = true;
-    Vector3 posEsquina1;
-    Vector3 posEsquina2;
+    bool firstCorner = true;
+    List<bool> firstCorners;
+    List<Vector3> posEsquinas;
+    Vector3 posEsquina;
+    
 
+      class CornerData
+    {
+        public Vector3 pos;
+        public string orientation;
+        public Quaternion rotation;
+    }
+
+    List<CornerData> corners = new List<CornerData>();
+
+    void RegisterCorner(string orientation, Quaternion rotation, Vector3 pos)
+    {
+        CornerData c = new CornerData();
+        c.pos = pos ;
+        c.orientation = orientation;
+        c.rotation = rotation;
+        corners.Add(c);
+    }
     void Grow()
     {
         Transform newSegment = Instantiate(segmentPrefab);
@@ -105,146 +124,94 @@ public class JesusnakeScript : MonoBehaviour
         }
     }
 
-    void fixCorners1(Sprite sprite, Quaternion rotation, string orientation)
+    Sprite GetCornerSprite(string last, string now)
     {
+        if (last == "left" && now == "up") return leftUpCorner;
+        if (last == "left" && now == "down") return leftDownCorner;
+        if (last == "right" && now == "up") return rightUpCorner;
+        if (last == "right" && now == "down") return rightDownCorner;
+        if (last == "up" && now == "left") return rightDownCorner;
+        if (last == "up" && now == "right") return leftDownCorner;
+        if (last == "down" && now == "left") return rightUpCorner;
+        if (last == "down" && now == "right") return leftUpCorner;
 
-        if (firstCorner1)
+        return null;
+    }
+
+    Quaternion GetSegmentRotation(string o)
+    {
+        return o switch
         {
-            posEsquina1 = segments[1].position;
-            firstCorner1 = false;
+            "left" => Quaternion.Euler(0, 0, 0),
+            "right" => Quaternion.Euler(0, 0, 180),
+            "up" => Quaternion.Euler(0, 0, -90),
+            "down" => Quaternion.Euler(0, 0, 90),
+            _ => Quaternion.identity
+        };
+    }
 
 
+    void fixCorners(Sprite sprite, Quaternion rotation, string orientation)
+    {
+        if (firstCorner)
+        {
+            posEsquina = segments[1].position;
+            firstCorner = false;
+            RegisterCorner(orientation, rotation, posEsquina);
         }
 
-        for (int i = 1; i < segments.Count - 1; i++)
+        if(segments[segments.Count -1].position != posEsquina)
         {
-            if (segments[i].position == posEsquina1)
+            for (int i = 1; i < segments.Count - 1; i++)
             {
-                segments[i].GetComponent<SpriteRenderer>().sprite = sprite;
-                segments[i].rotation = Quaternion.identity;
-            }
-            else if ((orientation == "down" && segments[i].position.y < posEsquina1.y) || (orientation == "up" && segments[i].position.y > posEsquina1.y))
-            {
+                if (segments[i].position == posEsquina)
+                { 
+                    segments[i].GetComponent<SpriteRenderer>().sprite = sprite;
+                    segments[i].rotation = Quaternion.identity;
+                }
+                else if ((orientation == "down" && segments[i].position.y < posEsquina.y) || (orientation == "up" && segments[i].position.y > posEsquina.y))
+                {
 
-                segments[i].rotation = rotation;
-                segments[i].GetComponent<SpriteRenderer>().sprite = normal;
+                    segments[i].rotation = rotation;
+                    segments[i].GetComponent<SpriteRenderer>().sprite = normal;
+                }
 
             }
-            if (segments[segments.Count - 1].position == posEsquina1)
-            {
-                segments[segments.Count - 1].rotation = rotation;
-            }
-
         }
-
+        else
+        {
+            firstCorner = true;
+            lastOrientation = orientation;
+            segments[1].rotation = rotation;
+            segments[segments.Count - 1].rotation = rotation;
+            segments[segments.Count - 2].rotation = rotation;
+        }
 
     }
-    
-    void fixCorners2(Sprite sprite, Quaternion rotation, string orientation)
-    {
-        
-        if (firstCorner2)
-        {
-            posEsquina2 = segments[1].position;
-            firstCorner2 = false;
-            
-            
-        }
 
-        for (int i = 1; i < segments.Count - 1; i++)
-        {
-            if (segments[i].position == posEsquina2)
-            {
-                segments[i].GetComponent<SpriteRenderer>().sprite = sprite;
-                segments[i].rotation = Quaternion.identity;
-            }
-            else if ((orientation == "down" && segments[i].position.y < posEsquina2.y) || (orientation == "up" && segments[i].position.y > posEsquina2.y))
-            {
 
-                segments[i].rotation = rotation;
-                segments[i].GetComponent<SpriteRenderer>().sprite = normal;
-
-            }
-            if (segments[segments.Count - 1].position == posEsquina2)
-            {
-                segments[segments.Count - 1].rotation = rotation;
-            }
-
-        }
-        
-       
-    }
     void fixOrientation(string orientation)
     {
-        Quaternion rotation = Quaternion.identity;
-        switch (orientation)
-        {
-            case "left":
-                rotation = Quaternion.Euler(0, 0, 0);
-                break;
-            case "right":
-                rotation = Quaternion.Euler(0, 0, 180);
-                break;
-            case "up":
-                rotation = Quaternion.Euler(0, 0, -90f);
-                break;
-            case "down":
-                rotation = Quaternion.Euler(0, 0, 90f);
-                break;
-        }
+        Quaternion rotation;
+        rotation = GetSegmentRotation(orientation);
         segments[0].rotation = rotation;
-        //segments[segments.Count -1].rotation = rotation;
         if (segments.Count == 2)
         {
             segments[1].rotation = rotation;
         }
-        // for (int i = 0; i < segments.Count; i++)
-        // {
-        //     segments[i].rotation = rotation;
-        // }
 
-        if (orientation == "down" && lastOrientation == "left")
+        if (lastOrientation != orientation)
         {
-            fixCorners1(leftDownCorner, rotation, orientation);
-        }
-        else if (orientation == "down" && lastOrientation == "right")
-        {
-            fixCorners1(rightDownCorner, rotation, orientation);
-        }
-        else if (orientation == "up" && lastOrientation == "left")
-        {
-            fixCorners1(leftUpCorner, rotation, orientation);
-        }
-        else if (orientation == "up" && lastOrientation == "right")
-        {
-            fixCorners1(rightUpCorner, rotation, orientation);
+            Sprite sprite = GetCornerSprite(lastOrientation, orientation);
+            fixCorners(sprite, rotation, orientation);
         }
         else
         {
-            firstCorner1 = true;
+            for (int i = 0; i < segments.Count; i++)
+            {
+                segments[i].rotation = rotation;
+            }
         }
-
-        if (orientation == "right" && lastOrientation == "down")
-        {
-            fixCorners2(leftUpCorner, rotation, orientation);
-        }
-        else if (orientation == "left" && lastOrientation == "down")
-        {
-            fixCorners2(rightUpCorner, rotation, orientation);
-        }
-        else if (orientation == "right" && lastOrientation == "up")
-        {
-            fixCorners2(leftDownCorner, rotation, orientation);
-        }
-        else if (orientation == "left" && lastOrientation == "up")
-        {
-            fixCorners2(rightDownCorner, rotation, orientation);
-        }
-        else
-        {
-            firstCorner2 = true;
-        }
-
 
 
     }
@@ -252,8 +219,9 @@ public class JesusnakeScript : MonoBehaviour
     void createTail()
     {
         segments[segments.Count - 1].GetComponent<SpriteRenderer>().sprite = tail;
-        segments[segments.Count - 1].tag = "Tail";
+        //segments[segments.Count - 1].tag = "Tail";
         segments[segments.Count - 1].GetComponent<SpriteRenderer>().sortingOrder = 1;
+        segments[segments.Count - 1].rotation = segments[segments.Count - 2].rotation;
     }
 
     void FixedUpdate()
