@@ -15,5 +15,9 @@ public class GameAssets : MonoBehaviour
     public Sprite leftUpCorner;
     public Sprite rightUpCorner;
     public Sprite apple;
+    public Tile tile;
+    public Transform parentTiles;
+    public Transform parentBodyParts;
+    public GameObject borders;
 
 }
