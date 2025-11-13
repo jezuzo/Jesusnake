@@ -15,6 +15,8 @@ public class Snake : MonoBehaviour
         Down
     }
     private float gridMoveTimer;
+    private float timeSinceLastInput = 0f;
+    private Queue<Direction> inputBuffer;
     private float gridMoveTimerMax;
     private Vector2Int gridPosition;
     private Direction gridMoveDirection;
@@ -22,7 +24,6 @@ public class Snake : MonoBehaviour
     private int snakeBodySize;
     private List<SnakeMovePosition> snakeMovePositionList;
     private List<SnakeBodyPart> snakeBodyPartsList;
-    private bool directionChosenThisTick = false;
 
     public void Setup(LevelGrid levelGrid)
     {
@@ -44,6 +45,7 @@ public class Snake : MonoBehaviour
         snakeMovePositionList = new List<SnakeMovePosition>();
         snakeBodyPartsList = new List<SnakeBodyPart>();
         snakeBodySize = 0;
+        inputBuffer = new Queue<Direction>(); 
         InitialState();
         
     }
@@ -61,38 +63,60 @@ public class Snake : MonoBehaviour
 
     private void ManageInput()
     {
-        if (directionChosenThisTick) return;
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
             if (gridMoveDirection != Direction.Right)
             {
-                gridMoveDirection = Direction.Left;
-                directionChosenThisTick = true;
+                inputBuffer.Enqueue(Direction.Left);
+                timeSinceLastInput = 0f;
+                
             }
         }
         else if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
         {
             if (gridMoveDirection != Direction.Left)
             {
-                gridMoveDirection = Direction.Right;
-                directionChosenThisTick = true;
+                inputBuffer.Enqueue(Direction.Right);
+                timeSinceLastInput = 0f;
+                
+               
             }
         }
         else if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
             if (gridMoveDirection != Direction.Down)
             {
-                gridMoveDirection = Direction.Up;
-                directionChosenThisTick = true;
+                inputBuffer.Enqueue(Direction.Up);
+                timeSinceLastInput = 0f;
+                
+                
             }
         }
         else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
         {
             if (gridMoveDirection != Direction.Up)
             {
-                gridMoveDirection = Direction.Down;
-                directionChosenThisTick = true;
+                inputBuffer.Enqueue(Direction.Down);
+                timeSinceLastInput = 0f;
+                
+                
             }
+        }
+        timeSinceLastInput+=Time.deltaTime;
+        if (inputBuffer.Count > 0)
+        {
+            Direction nextDirection = inputBuffer.Peek();
+            if (!(gridMoveDirection == Direction.Left && nextDirection == Direction.Right) &&
+                !(gridMoveDirection == Direction.Right && nextDirection == Direction.Left) &&
+                !(gridMoveDirection == Direction.Up && nextDirection == Direction.Down) &&
+                !(gridMoveDirection == Direction.Down && nextDirection == Direction.Up))
+            {
+                gridMoveDirection = nextDirection;
+            }
+        }
+        if (timeSinceLastInput > gridMoveTimerMax)
+        {
+            inputBuffer.Clear();
         }
     }
 
@@ -103,6 +127,8 @@ public class Snake : MonoBehaviour
         if (gridMoveTimer >= gridMoveTimerMax)
         {
             gridMoveTimer -= gridMoveTimerMax;
+            quitAction();
+            
 
             SnakeMovePosition previousSnakeMovePosition = null;
             if (snakeMovePositionList.Count > 0)
@@ -150,11 +176,19 @@ public class Snake : MonoBehaviour
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
 
             UpdateSnakeBodyParts();
-            directionChosenThisTick = false;
+            
 
         }
         
 
+    }
+    private void quitAction()
+    {
+        if(inputBuffer.Count > 0)
+        {
+            inputBuffer.Dequeue();
+        }
+        
     }
     private void CreateSnakeBody()
     {
