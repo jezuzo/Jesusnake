@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class GameAssets : MonoBehaviour
@@ -19,5 +20,7 @@ public class GameAssets : MonoBehaviour
     public Transform parentTiles;
     public Transform parentBodyParts;
     public GameObject borders;
+    public TMP_Text scoreText;
+    public TMP_Text highScoreText;
 
 }

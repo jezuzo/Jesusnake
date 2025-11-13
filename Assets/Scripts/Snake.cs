@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class Snake : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class Snake : MonoBehaviour
     public void Setup(LevelGrid levelGrid)
     {
         this.levelGrid = levelGrid;
+
     }
     public void InitialState()
     {
@@ -133,6 +135,7 @@ public class Snake : MonoBehaviour
             {
                 snakeBodySize++;
                 CreateSnakeBody();
+                ScoreManager.scoreManager.addScore(1);
             }
             if (snakeCollisionedBorder|| snakeCollisionedSnake)
             {
@@ -177,6 +180,8 @@ public class Snake : MonoBehaviour
         SnakeMovePosition previousSnakeMovePosition = null;
         SnakeMovePosition snakeMovePosition = new SnakeMovePosition(gridPosition, gridMoveDirection, previousSnakeMovePosition);
         snakeMovePositionList.Insert(0, snakeMovePosition);
+
+        ScoreManager.scoreManager.setScore(0);
     
         
     }
