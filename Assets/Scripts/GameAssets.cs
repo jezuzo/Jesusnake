@@ -22,5 +22,9 @@ public class GameAssets : MonoBehaviour
     public GameObject borders;
     public TMP_Text scoreText;
     public TMP_Text highScoreText;
+    public Sprite box;
+    public Sprite boxUnlock;
+    public Sprite obstacle;
+    public GameObject obstacles;
 
 }

@@ -21,13 +21,16 @@ public class Snake : MonoBehaviour
     private Vector2Int gridPosition;
     private Direction gridMoveDirection;
     private LevelGrid levelGrid;
+    private ObjectSpawner objectSpawner;
     private int snakeBodySize;
     private List<SnakeMovePosition> snakeMovePositionList;
     private List<SnakeBodyPart> snakeBodyPartsList;
 
-    public void Setup(LevelGrid levelGrid)
+
+    public void Setup(LevelGrid levelGrid, ObjectSpawner objectSpawner)
     {
         this.levelGrid = levelGrid;
+        this.objectSpawner = objectSpawner;
 
     }
     public void InitialState()
@@ -58,6 +61,8 @@ public class Snake : MonoBehaviour
 
         ManageInput();
         ManageGridMovement();
+        
+        
        
     }
 
@@ -154,19 +159,26 @@ public class Snake : MonoBehaviour
             gridPosition += gridMoveDirectionVector;
 
 
-            bool snakeAteFood = levelGrid.TrySnakeEatFood(gridPosition);
-            bool snakeCollisionedBorder = levelGrid.TrySnakeCollisionBorder(gridPosition);
-            bool snakeCollisionedSnake = levelGrid.TrySnakeCollisionSnake(gridPosition);
+            bool snakeAteFood = objectSpawner.TrySnakeEatFood(gridPosition);
+            bool snakeCollisionedBorder = objectSpawner.TrySnakeCollisionBorder(gridPosition);
+            bool snakeCollisionedSnake = objectSpawner.TrySnakeCollisionSnake(gridPosition);
+            bool snakeCollisioningBox = objectSpawner.TrySnakeCollisioningBox(gridPosition);
+            bool snakeCollisionedBush = objectSpawner.TrySnakeCollisionObstacle(gridPosition);
             if (snakeAteFood)
             {
                 snakeBodySize++;
                 CreateSnakeBody();
                 ScoreManager.scoreManager.addScore(1);
             }
-            if (snakeCollisionedBorder|| snakeCollisionedSnake)
+            if (snakeCollisionedBorder|| snakeCollisionedSnake || snakeCollisionedBush)
             {
                 ResetGame();
             }
+            if (snakeCollisioningBox)
+            {
+                objectSpawner.MoveBox(gridMoveDirectionVector);
+            }
+
 
             if (snakeMovePositionList.Count >= snakeBodySize + 1)
             {
@@ -216,7 +228,7 @@ public class Snake : MonoBehaviour
         snakeMovePositionList.Insert(0, snakeMovePosition);
 
         ScoreManager.scoreManager.setScore(0);
-    
+        
         
     }
     private void UpdateSnakeBodyParts()
@@ -292,16 +304,16 @@ public class Snake : MonoBehaviour
                         angle = 0;
                         break;
                     case Direction.Right:
-                        angle = 180;
+                        angle = -180;
                         break;
                     case Direction.Up:
-                        angle = 90;
-                        break;
-                    case Direction.Down:
                         angle = -90;
                         break;
+                    case Direction.Down:
+                        angle = 90;
+                        break;
                 }
-                transform.eulerAngles = new Vector3(0, 0, -angle);
+                transform.eulerAngles = new Vector3(0, 0, angle);
             }
         }
         public int GetSnakeBodyAngle()
