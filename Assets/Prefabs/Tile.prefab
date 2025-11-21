@@ -105,4 +105,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tile
   baseColor: {r: 0.6666667, g: 0.84313726, b: 0.31764707, a: 1}
   offsetColor: {r: 0.63529414, g: 0.81960785, b: 0.28627452, a: 1}
+  borderColor: {r: 0.1254902, g: 0.34901962, b: 0, a: 1}
   renderer: {fileID: 4748117323170712425}

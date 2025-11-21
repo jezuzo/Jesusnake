@@ -19,7 +19,6 @@ public class GameAssets : MonoBehaviour
     public Tile tile;
     public Transform parentTiles;
     public Transform parentBodyParts;
-    public GameObject borders;
     public TMP_Text scoreText;
     public TMP_Text highScoreText;
     public Sprite box;

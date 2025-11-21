@@ -6,11 +6,13 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private ObjectSpawner objectSpawner;
     private LevelGrid levelGrid;
     
-    private void Start()
+    private void Awake()
     {
-        levelGrid = new LevelGrid(20, 20);
-        snake.Setup(levelGrid, objectSpawner);
-        objectSpawner.Setup(snake);
+        
+        levelGrid = new LevelGrid(21,21);
+        snake.Setup(objectSpawner, levelGrid);
+        objectSpawner.Setup(snake, levelGrid);
+        
     }
 
     

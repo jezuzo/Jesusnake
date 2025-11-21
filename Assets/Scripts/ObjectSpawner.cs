@@ -12,27 +12,72 @@ public class ObjectSpawner : MonoBehaviour
     private Vector2Int foodGridPosition;
     private Vector2Int boxGridPosition;
     private Vector2Int boxUnlockGridPosition;
-    private Vector2Int bushGridPosition;
+    private Vector2Int obstacleGridPosition;
     private List<Vector2Int> objectsGridPositionList;
-    private List<Vector2Int> obstaclesGridPositionList;
-    private List<Vector2Int> foodGridPositionList;
+    private List<Obstacle> obstaclesList;
+    private List<Food> foodList;
     private GameObject foodGameObject;
     private GameObject boxGameObject;
     private GameObject boxUnlockGameObject;
-    private GameObject bushGameObject;
-    private int width = 20;
-    private int height = 20;
-    public void Setup(Snake snake)
+    private GameObject obstacleGameObject;
+    private int width;
+    private int height;
+    public void Setup(Snake snake, LevelGrid levelGrid)
     {
         
         this.snake = snake;
         objectsGridPositionList = new List<Vector2Int>();
-        obstaclesGridPositionList = new List<Vector2Int>();
-        foodGridPositionList = new List<Vector2Int>();
-       
-        SpawnBox();
+        obstaclesList = new List<Obstacle>();
+        foodList = new List<Food>();
+        width = levelGrid.width - 1;
+        height = levelGrid.height - 1;
+        
+        
         spawnRate = spawnRateRef;
 
+    }
+    private void Start()
+    {
+        SpawnBox();
+    }
+    private class Food
+    {
+        private Vector2Int foodGridPosition;
+        private GameObject foodGameObject;
+
+        public Food(Vector2Int foodGridPosition, GameObject foodGameObject)
+        {
+            this.foodGridPosition = foodGridPosition;
+            this.foodGameObject = foodGameObject;
+        }
+
+        public Vector2Int GetFoodGridPosition()
+        {
+            return foodGridPosition;
+        }
+        public GameObject GetFoodGameObject()
+        {
+            return foodGameObject; 
+        }
+    }
+
+    private class Obstacle
+    {
+        public Vector2Int obstacleGridPosition;
+        public GameObject obstacleGameObject;
+        public Obstacle(Vector2Int obstacleGridPosition, GameObject obstacleGameObject)
+        {
+            this.obstacleGridPosition = obstacleGridPosition;
+            this.obstacleGameObject = obstacleGameObject;
+        }
+        public Vector2Int GetObstacleGridPosition()
+        {
+            return obstacleGridPosition;
+        }
+        public GameObject GetObstacleGameObject()
+        {
+            return obstacleGameObject;
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is create
@@ -40,20 +85,28 @@ public class ObjectSpawner : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (spawnTimer > spawnRate)
-        {
+        //if (spawnTimer > spawnRate)
+        //{
 
-            SpawnBush();
-            spawnTimer = 0f;
-            Invoke("DeleteBush",20f);
-        }
-        spawnTimer += Time.deltaTime;
+        //    SpawnObstacle();
+        //    spawnTimer = 0f;
+        //    Invoke("DeleteObstacle",20f);
+        //}
+        //spawnTimer += Time.deltaTime;
 
         bool boxCollisionedUnlock = TryBoxCollisionUnlock();
+        bool boxCollisionedObstacle = TryBoxCollisionObstacle();
         if (boxCollisionedUnlock)
         {
             SpawnFood(boxGridPosition);
             SpawnBox();
+        }
+        if (boxCollisionedObstacle)
+        {
+            
+            boxGridPosition = new Vector2Int(Random.Range(2, width - 1), Random.Range(2, height - 1));
+            boxGameObject.transform.position = new Vector3(boxGridPosition.x, boxGridPosition.y, 0);
+            objectsGridPositionList.Add(boxGridPosition);
         }
     }
 
@@ -63,7 +116,7 @@ public class ObjectSpawner : MonoBehaviour
         {
             do
             {
-                foodGridPosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
+                foodGridPosition = new Vector2Int(Random.Range(1, width), Random.Range(1, height));
             } while (snake.GetFullSnakeGridPositionList().IndexOf(foodGridPosition) != -1 || objectsGridPositionList.Contains(foodGridPosition));
 
         }
@@ -74,11 +127,12 @@ public class ObjectSpawner : MonoBehaviour
 
         
         objectsGridPositionList.Add(foodGridPosition);
-        foodGridPositionList.Add(foodGridPosition);
+        
         foodGameObject = new GameObject("Food", typeof(SpriteRenderer));
         foodGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.gameAssets.apple;
         foodGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
         foodGameObject.transform.position = new Vector3(foodGridPosition.x, foodGridPosition.y, 0);
+        foodList.Add(new Food(foodGridPosition, foodGameObject));
 
     }
     private void SpawnBox()
@@ -86,14 +140,14 @@ public class ObjectSpawner : MonoBehaviour
 
         do
         {
-            boxGridPosition = new Vector2Int(Random.Range(1, width-1), Random.Range(1, height-1));
+            boxGridPosition = new Vector2Int(Random.Range(2, width-1), Random.Range(2, height-1));
         } while ((snake.GetFullSnakeGridPositionList().IndexOf(boxGridPosition) != -1) || objectsGridPositionList.Contains(boxGridPosition));
+        objectsGridPositionList.Add(boxGridPosition);
         do
         {
-            boxUnlockGridPosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
+            boxUnlockGridPosition = new Vector2Int(Random.Range(1, width), Random.Range(1, height));
         } while ((snake.GetFullSnakeGridPositionList().IndexOf(boxUnlockGridPosition) != -1) || objectsGridPositionList.Contains(boxUnlockGridPosition));
 
-        objectsGridPositionList.Add(boxGridPosition);
         objectsGridPositionList.Add(boxUnlockGridPosition);
         boxGameObject = new GameObject("Box", typeof(SpriteRenderer));
         boxGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.gameAssets.box;
@@ -108,30 +162,32 @@ public class ObjectSpawner : MonoBehaviour
 
     }
 
-    private void SpawnBush()
+    private void SpawnObstacle()
     {
         spawnRate = Random.Range(spawnRateRef, spawnRateRef + 15f);
         do
         {
-            bushGridPosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(bushGridPosition) != -1) || objectsGridPositionList.Contains(bushGridPosition));
+            obstacleGridPosition = new Vector2Int(Random.Range(1, width), Random.Range(1, height));
+        } while ((snake.GetFullSnakeGridPositionList().IndexOf(obstacleGridPosition) != -1) || objectsGridPositionList.Contains(obstacleGridPosition));
         
-        objectsGridPositionList.Add(bushGridPosition);
-        obstaclesGridPositionList.Add(bushGridPosition);
-        bushGameObject = new GameObject("Bush", typeof(SpriteRenderer));
-        bushGameObject.transform.SetParent(GameAssets.gameAssets.obstacles.transform);
-        bushGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.gameAssets.obstacle;
-        bushGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
-        bushGameObject.GetComponent<SpriteRenderer>().color = new Color(0.1254902f, 0.3490196f, 0f);
-        bushGameObject.transform.position = new Vector3(bushGridPosition.x, bushGridPosition.y, 0);
+        objectsGridPositionList.Add(obstacleGridPosition);
+        obstacleGameObject = new GameObject("Bush", typeof(SpriteRenderer));
+        obstacleGameObject.transform.SetParent(GameAssets.gameAssets.obstacles.transform);
+        obstacleGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.gameAssets.obstacle;
+        obstacleGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        obstacleGameObject.GetComponent<SpriteRenderer>().color = new Color(0.1254902f, 0.3490196f, 0f);
+        obstacleGameObject.transform.position = new Vector3(obstacleGridPosition.x, obstacleGridPosition.y, 0);
+        obstaclesList.Add(new Obstacle(obstacleGridPosition, obstacleGameObject));
+
 
 
     }
-    private void DeleteBush()
+    private void DeleteObstacle()
     {
-        Transform[] obstaclesChilds = GameAssets.gameAssets.obstacles.GetComponentsInChildren<Transform>();
-        obstaclesGridPositionList.Remove(new Vector2Int((int)obstaclesChilds[1].position.x, (int)obstaclesChilds[1].position.y));
-        Destroy(obstaclesChilds[1].gameObject);
+        Destroy(obstaclesList[0].GetObstacleGameObject());
+        objectsGridPositionList.Remove(obstaclesList[0].GetObstacleGridPosition());
+        obstaclesList.Remove(obstaclesList[0]);
+        
     }
     public void MoveBox(Vector2Int gridMoveDirection)
     {
@@ -141,50 +197,27 @@ public class ObjectSpawner : MonoBehaviour
     }
     public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
     {
-        if (foodGridPositionList.Contains(snakeGridPosition))
+        for(int i = 0; i < foodList.Count; i++)
         {
-            Object.Destroy(foodGameObject);
-            objectsGridPositionList.Remove(foodGridPosition);
-            foodGridPositionList.Remove(foodGridPosition);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    public bool TrySnakeCollisionBorder(Vector2Int snakeGridPosition)
-    {
-        Transform[] borderChilds = GameAssets.gameAssets.borders.GetComponentsInChildren<Transform>();
-
-        Transform borderHorizontal1 = borderChilds[1];
-        Transform borderHorizontal2 = borderChilds[2];
-        Transform borderVertical1 = borderChilds[3];
-        Transform borderVertical2 = borderChilds[4];
-
-        if ((snakeGridPosition.y > borderHorizontal1.position.y) || (snakeGridPosition.y < borderHorizontal2.position.y) ||
-        (snakeGridPosition.x < borderVertical1.position.x) || (snakeGridPosition.x > borderVertical2.position.x))
-        {
-            return true;
-        }
-
-        return false;
-    }
-    public bool TrySnakeCollisionSnake(Vector2Int snakeGridPosition)
-    {
-        Transform[] snakeBodyParts = GameAssets.gameAssets.parentBodyParts
-        .GetComponentsInChildren<Transform>()
-        .Where(t => t != GameAssets.gameAssets.parentBodyParts.transform)
-        .ToArray();
-
-        foreach (Transform snakeBodyPart in snakeBodyParts)
-        {
-            Vector2Int snakeBodyPartPosition = new Vector2Int((int)snakeBodyPart.position.x, (int)snakeBodyPart.position.y);
-            if (snakeBodyPartPosition == snakeGridPosition)
+            if (foodList[i].GetFoodGridPosition() == snakeGridPosition)
             {
+                Object.Destroy(foodList[i].GetFoodGameObject());
+                objectsGridPositionList.Remove(foodList[i].GetFoodGridPosition());
+                foodList.Remove(foodList[i]);
                 return true;
             }
         }
+        return false;
+
+    }
+    public bool TrySnakeCollisionBorder(Vector2Int snakeGridPosition)
+    {
+
+        if (snakeGridPosition.x == 0 || snakeGridPosition.y == 0 || snakeGridPosition.x == width|| snakeGridPosition.y == height)
+        {
+            return true;
+        }
+
         return false;
     }
     public bool TrySnakeCollisioningBox(Vector2Int snakeGridPosition)
@@ -202,16 +235,14 @@ public class ObjectSpawner : MonoBehaviour
     }
     public bool TrySnakeCollisionObstacle(Vector2Int snakeGridPosition)
     {
-        if (obstaclesGridPositionList.Contains(snakeGridPosition))
+        for (int i = 0; i < obstaclesList.Count; i++)
         {
-            objectsGridPositionList.Remove(bushGridPosition);
-            return true;
+            if (obstaclesList[i].GetObstacleGridPosition() == snakeGridPosition)
+            {
+                return true;
+            }
         }
-        else
-        {
-            return false;
-        }
-
+        return false;
     }
 
     private bool TryBoxCollisionUnlock()
@@ -228,5 +259,27 @@ public class ObjectSpawner : MonoBehaviour
         {
             return false;
         }
+    }
+
+    private bool TryBoxCollisionObstacle()
+    {
+        for (int i = 0; i < obstaclesList.Count; i++)
+        {
+            if (obstaclesList[i].GetObstacleGridPosition() == boxGridPosition)
+            {
+                objectsGridPositionList.Remove(boxGridPosition);
+                return true;
+            }
+            
+        }
+        if (boxGridPosition.x == 0 || boxGridPosition.y == 0 || boxGridPosition.x == width || boxGridPosition.y == height)
+        {
+            return true;
+        }
+        if(snake.GetFullSnakeGridPositionList().IndexOf(boxGridPosition) != -1)
+        {
+            return true;
+        }
+        return false;
     }
 }

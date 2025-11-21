@@ -19,11 +19,14 @@ public class LevelGrid
             {
                 var spawnedTile = GameObject.Instantiate(GameAssets.gameAssets.tile, new Vector3(x, y), Quaternion.identity, GameAssets.gameAssets.parentTiles);
                 spawnedTile.name = $"Tile {x} {y}";
+
                 var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
-                spawnedTile.Init(isOffset);
+                var isBorder = (x == 0 || y == 0 || x == width-1 || y == height-1);
+                spawnedTile.Init(isOffset, isBorder);
             }
         }
         Camera.main.transform.position = new Vector3((float)width / 2 - 0.5f, (float)height / 2 - 0.5f,-10);
+        Camera.main.orthographicSize = width/2 + 1;
     }
     
     public LevelGrid(int width, int height)
