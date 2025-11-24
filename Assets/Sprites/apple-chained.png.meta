@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 35eced6420e412e4885f467021827678
+guid: c9138ff18c3bff046be2dcf197a31277
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7832214784768987486
-    second: apple_0
+      213: -3726076178923026443
+    second: apple-chained_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: apple_0
+      name: apple-chained_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 10
-        width: 13
-        height: 15
+        x: 19
+        y: 15
+        width: 7
+        height: 9
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2ae284d66226e4390800000000000000
-      internalID: -7832214784768987486
+      spriteID: 5f78f35f4715a4cc0800000000000000
+      internalID: -3726076178923026443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: apple-chained_1
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 13
+        width: 9
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e760fd581f012174abf732b41980c09a
+      internalID: 519520332
       vertices: []
       indices: 
       edges: []
@@ -138,7 +160,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 0077902594b59e24b833de306a6f658b
+    spriteID: 44e33d83000e26e47bca8932cf80429f
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +170,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      apple_0: -7832214784768987486
+      apple-chained_0: -3726076178923026443
+      apple-chained_1: 519520332
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,28 +1,28 @@
 fileFormatVersion: 2
-guid: 509127178f6a4314f9c98349ba0773e4
+guid: 11f6963c96745934db57268d89b09d2a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7430089444027183754
-    second: pixil-frame-0(18)_0
+      213: -8029628866282303079
+    second: Jesusnaket_0
   - first:
-      213: 2663884744775818221
-    second: pixil-frame-0(18)_1
+      213: -7466943423708111317
+    second: Jesusnaket_1
   - first:
-      213: -5973386082017685804
-    second: pixil-frame-0(18)_2
+      213: 8579895414735065867
+    second: Jesusnaket_2
   - first:
-      213: 1702343436245120228
-    second: pixil-frame-0(18)_3
+      213: -9198533601500413480
+    second: Jesusnaket_3
   - first:
-      213: -874260609182587202
-    second: pixil-frame-0(18)_4
+      213: -6871452379067282825
+    second: Jesusnaket_4
   - first:
-      213: -6940311871719811981
-    second: pixil-frame-0(18)_5
+      213: -2178182980966945002
+    second: Jesusnaket_5
   - first:
-      213: -4731458521084986911
-    second: pixil-frame-0(18)_6
+      213: -4646881768199598355
+    second: Jesusnaket_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -55,7 +55,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -93,7 +93,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -131,12 +131,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pixil-frame-0(18)_0
+      name: Jesusnaket_0
       rect:
         serializedVersion: 2
-        x: 1
+        x: 11
         y: 45
-        width: 15
+        width: 18
         height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -146,17 +146,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 67d4167540503e890800000000000000
-      internalID: -7430089444027183754
+      spriteID: 9915503c617019090800000000000000
+      internalID: -8029628866282303079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixil-frame-0(18)_1
+      name: Jesusnaket_1
       rect:
         serializedVersion: 2
-        x: 26
+        x: 31
         y: 47
         width: 12
         height: 12
@@ -168,14 +168,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: debd1febf0508f420800000000000000
-      internalID: 2663884744775818221
+      spriteID: b2e50f78486106890800000000000000
+      internalID: -7466943423708111317
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixil-frame-0(18)_2
+      name: Jesusnaket_2
       rect:
         serializedVersion: 2
         x: 45
@@ -190,14 +190,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4dec21bb1054a1da0800000000000000
-      internalID: -5973386082017685804
+      spriteID: b035945eb69e11770800000000000000
+      internalID: 8579895414735065867
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixil-frame-0(18)_3
+      name: Jesusnaket_3
       rect:
         serializedVersion: 2
         x: 26
@@ -212,14 +212,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4e4bb1bf550ff9710800000000000000
-      internalID: 1702343436245120228
+      spriteID: 8d1c214ec6e385080800000000000000
+      internalID: -9198533601500413480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixil-frame-0(18)_4
+      name: Jesusnaket_4
       rect:
         serializedVersion: 2
         x: 26
@@ -234,14 +234,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: eb62e84ab900ed3f0800000000000000
-      internalID: -874260609182587202
+      spriteID: 77a8eaeb772b3a0a0800000000000000
+      internalID: -6871452379067282825
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixil-frame-0(18)_5
+      name: Jesusnaket_5
       rect:
         serializedVersion: 2
         x: 38
@@ -256,14 +256,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 374d6bfbf1f0faf90800000000000000
-      internalID: -6940311871719811981
+      spriteID: 61fe9ab8e1a85c1e0800000000000000
+      internalID: -2178182980966945002
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: pixil-frame-0(18)_6
+      name: Jesusnaket_6
       rect:
         serializedVersion: 2
         x: 38
@@ -278,8 +278,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e9fb3d1b8b765eb0800000000000000
-      internalID: -4731458521084986911
+      spriteID: dee493de6a5f28fb0800000000000000
+      internalID: -4646881768199598355
       vertices: []
       indices: 
       edges: []
@@ -298,13 +298,13 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      pixil-frame-0(18)_0: -7430089444027183754
-      pixil-frame-0(18)_1: 2663884744775818221
-      pixil-frame-0(18)_2: -5973386082017685804
-      pixil-frame-0(18)_3: 1702343436245120228
-      pixil-frame-0(18)_4: -874260609182587202
-      pixil-frame-0(18)_5: -6940311871719811981
-      pixil-frame-0(18)_6: -4731458521084986911
+      Jesusnaket_0: -8029628866282303079
+      Jesusnaket_1: -7466943423708111317
+      Jesusnaket_2: 8579895414735065867
+      Jesusnaket_3: -9198533601500413480
+      Jesusnaket_4: -6871452379067282825
+      Jesusnaket_5: -2178182980966945002
+      Jesusnaket_6: -4646881768199598355
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

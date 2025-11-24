@@ -9,7 +9,7 @@ public class GameHandler : MonoBehaviour
     private void Awake()
     {
         
-        levelGrid = new LevelGrid(21,21);
+        levelGrid = new LevelGrid(11,11);
         snake.Setup(objectSpawner, levelGrid);
         objectSpawner.Setup(snake, levelGrid);
         

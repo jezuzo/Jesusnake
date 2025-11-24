@@ -71,7 +71,7 @@ TextureImporter:
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 10
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -134,9 +134,9 @@ TextureImporter:
       name: Jesusnake_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 46
-        width: 13
+        x: 4
+        y: 74
+        width: 14
         height: 14
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -156,9 +156,9 @@ TextureImporter:
       name: Jesusnake_1
       rect:
         serializedVersion: 2
-        x: 32
-        y: 48
-        width: 10
+        x: 24
+        y: 76
+        width: 11
         height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -178,8 +178,8 @@ TextureImporter:
       name: Jesusnake_2
       rect:
         serializedVersion: 2
-        x: 46
-        y: 48
+        x: 37
+        y: 76
         width: 10
         height: 10
       alignment: 0
@@ -200,10 +200,10 @@ TextureImporter:
       name: Jesusnake_3
       rect:
         serializedVersion: 2
-        x: 26
-        y: 26
-        width: 12
-        height: 12
+        x: 56
+        y: 75
+        width: 9
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -222,10 +222,10 @@ TextureImporter:
       name: Jesusnake_4
       rect:
         serializedVersion: 2
-        x: 26
-        y: 13
-        width: 12
-        height: 12
+        x: 70
+        y: 74
+        width: 13
+        height: 14
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -244,9 +244,9 @@ TextureImporter:
       name: Jesusnake_5
       rect:
         serializedVersion: 2
-        x: 39
-        y: 26
-        width: 12
+        x: 17
+        y: 53
+        width: 13
         height: 12
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -266,9 +266,9 @@ TextureImporter:
       name: Jesusnake_6
       rect:
         serializedVersion: 2
-        x: 39
-        y: 13
-        width: 12
+        x: 31
+        y: 53
+        width: 13
         height: 12
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -280,6 +280,116 @@ TextureImporter:
       bones: []
       spriteID: f72f28c9d5c065c90800000000000000
       internalID: -7181538959598357889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jesusnake_7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 61
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1b9a5cd62bae084cb6691ddb981188c
+      internalID: 1224271331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jesusnake_8
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 38
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f1acdd7f2d91fb499b99f4f03507155
+      internalID: -993897422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jesusnake_9
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 38
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c60284f0eef7ef4ba381cfaaf5cc94d
+      internalID: 1479889406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jesusnake_10
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 43
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f9c461acf71fa74096fd091706db66f
+      internalID: -748927565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Jesusnake_11
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 46
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd201ba64f2dab84eaa97c52d6a8ab1b
+      internalID: 542911292
       vertices: []
       indices: 
       edges: []
@@ -296,15 +406,22 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Jesusnake_0: 2247122123381275639
       Jesusnake_1: 7643515942544648536
+      Jesusnake_10: -748927565
+      Jesusnake_11: 542911292
       Jesusnake_2: -1319261234296012211
       Jesusnake_3: 528250518651869363
       Jesusnake_4: -4994040905844885478
       Jesusnake_5: -8756506484605053467
       Jesusnake_6: -7181538959598357889
+      Jesusnake_7: 1224271331
+      Jesusnake_8: -993897422
+      Jesusnake_9: 1479889406
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
