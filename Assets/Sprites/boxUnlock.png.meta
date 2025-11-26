@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: f7e246a5f4ab32645884922098640939
+guid: 7955fe3d98e85fc4681c119316f038dc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2429919002490121231
-    second: arrows_0
-  - first:
-      213: 67926103340967526
-    second: arrows_1
-  - first:
-      213: -2938970880757876879
-    second: arrows_2
-  - first:
-      213: 5635105361348811957
-    second: arrows_3
+      213: -3468594879125706288
+    second: boxUnlock_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -60,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 11
+  spritePixelsToUnits: 10
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -122,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: arrows_0
+      name: boxUnlock_0
       rect:
         serializedVersion: 2
-        x: 41
-        y: 21
-        width: 13
-        height: 15
+        x: 5
+        y: 5
+        width: 10
+        height: 11
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,74 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1f3da9f9a81374ed0800000000000000
-      internalID: -2429919002490121231
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: arrows_1
-      rect:
-        serializedVersion: 2
-        x: 41
-        y: 4
-        width: 13
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6666d9c5e6251f000800000000000000
-      internalID: 67926103340967526
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: arrows_2
-      rect:
-        serializedVersion: 2
-        x: 25
-        y: 21
-        width: 13
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 177b5372e8da637d0800000000000000
-      internalID: -2938970880757876879
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: arrows_3
-      rect:
-        serializedVersion: 2
-        x: 24
-        y: 4
-        width: 13
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5bc5817587ae33e40800000000000000
-      internalID: 5635105361348811957
+      spriteID: 0d929f7b5531ddfc0800000000000000
+      internalID: -3468594879125706288
       vertices: []
       indices: 
       edges: []
@@ -213,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: fe599ca4dfaea6c4b86adcc6c4a4d734
+    spriteID: 22cb4a5ed344a1147bf68325c46818a1
     internalID: 0
     vertices: []
     indices: 
@@ -223,10 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      arrows_0: -2429919002490121231
-      arrows_1: 67926103340967526
-      arrows_2: -2938970880757876879
-      arrows_3: 5635105361348811957
+      boxUnlock_0: -3468594879125706288
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

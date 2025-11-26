@@ -248,7 +248,7 @@ MonoBehaviour:
   scoreText: {fileID: 427044083}
   highScoreText: {fileID: 738068268}
   box: {fileID: 7499154508442906066, guid: 9a5820e5ff7ee3645ac6f13beeb9077e, type: 3}
-  boxUnlock: {fileID: -3468594879125706288, guid: 7955fe3d98e85fc4681c119316f038dc, type: 3}
+  boxUnlock: {fileID: -3468594879125706288, guid: 400116c9ad4fd6748b04f6177be26627, type: 3}
   obstacle: {fileID: 4160635012330822537, guid: 4464378ca09779449bdd6bfa8a752795, type: 3}
   obstacles: {fileID: 1733917038}
 --- !u!4 &175749955
@@ -456,7 +456,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 346775597}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 10, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -786,7 +786,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 000000005fbd89129fcf1cd6
+  m_ApplyToSortingLayers: 000000005fbd8912
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -1597,8 +1597,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
-  - {fileID: 175749955}
   - {fileID: 346775602}
+  - {fileID: 175749955}
   - {fileID: 1539385939}
   - {fileID: 755410600}
   - {fileID: 286283157}

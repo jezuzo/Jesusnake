@@ -31,6 +31,7 @@ public class GameAssets : MonoBehaviour
     public Sprite apple;
     public Sprite locker;
     public Sprite key;
+
     public Tile tile;
     public Transform parentTiles;
     public Transform parentBodyParts;

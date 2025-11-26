@@ -13,353 +13,793 @@ using static UnityEngine.Tilemaps.TilemapRenderer;
 public class ObjectSpawner : MonoBehaviour
 {
     private float spawnTimer;
-    public float spawnRateRef = 2f;
+    public float spawnRateRef = 0.1f;
     private float spawnRate;
     private Snake snake;
-    private Vector2Int foodGridPosition;
-    private Vector2Int boxGridPosition;
-    private Vector2Int boxUnlockGridPosition;
-    private Vector2Int obstacleGridPosition;
-    private Vector2Int chainedGridPosition;
-    private Vector2Int keyGridPosition;
-    private Vector2Int arrowGridPosition;
-    private List<Vector2Int> objectsGridPositionList;
-    private List<Obstacle> obstaclesList;
-    private List<Food> foodList;
-    private GameObject foodGameObject;
-    private GameObject boxGameObject;
-    private GameObject boxUnlockGameObject;
-    private GameObject obstacleGameObject;
-    private GameObject chainedGameObject;
-    private GameObject keyGameObject;
-    private GameObject arrowGameObject;
+    private List<Object> objectsList;
     private int width;
     private int height;
+
     private bool chainedApplesEnabled = false;
     private bool boxesEnabled = false;
     private bool appleArrowsEnabled = false;
-    private Arrow arrow;
+    private bool normalModeEnabled = false;
+    private bool randomModeEnabled = false;
+
+    public bool enableChainedApples = false;
+    public bool enableBoxes = false;
+    public bool enableAppleArrows = false;
+    public bool enableNormalMode = false;
+    public bool enableObstacles = false;
+    public bool enableRandomMode = true;
 
     public void Setup(Snake snake, LevelGrid levelGrid)
     {
         
         this.snake = snake;
-        objectsGridPositionList = new List<Vector2Int>();
-        obstaclesList = new List<Obstacle>();
-        foodList = new List<Food>();
+        objectsList = new List<Object>();
         width = levelGrid.width - 1;
         height = levelGrid.height - 1;
         
-        
+
         spawnRate = spawnRateRef;
 
     }
     private void Start()
     {
-        
+        if (enableRandomMode)
+        {
+            EnableRandomMode();
+        }
+       
     }
-    private class Food
+    public class Object
     {
-        private Vector2Int foodGridPosition;
-        private GameObject foodGameObject;
-
-        public Food(Vector2Int foodGridPosition, GameObject foodGameObject)
-        {
-            this.foodGridPosition = foodGridPosition;
-            this.foodGameObject = foodGameObject;
-        }
-
-        public Vector2Int GetFoodGridPosition()
-        {
-            return foodGridPosition;
-        }
-        public GameObject GetFoodGameObject()
-        {
-            return foodGameObject; 
-        }
-    }
-
-    private class Obstacle
-    {
-        public Vector2Int obstacleGridPosition;
-        public GameObject obstacleGameObject;
-        public Obstacle(Vector2Int obstacleGridPosition, GameObject obstacleGameObject)
-        {
-            this.obstacleGridPosition = obstacleGridPosition;
-            this.obstacleGameObject = obstacleGameObject;
-        }
-        public Vector2Int GetObstacleGridPosition()
-        {
-            return obstacleGridPosition;
-        }
-        public GameObject GetObstacleGameObject()
-        {
-            return obstacleGameObject;
-        }
-    }
-
-    private class Arrow
-    {
-        public Vector2Int arrowGridPosition;
-        public GameObject arrowGameObject;
+        private Vector2Int objectGridPosition;
+        private GameObject objectGameObject;
+        private string type;
         private Direction arrowDirection;
-        private Sprite arrowSprite;
-
-        public Arrow(Vector2Int arrowGridPosition, GameObject arrowGameObject, Direction arrowDirection)
+        private Sprite objectSprite;
+        
+        public Object(Vector2Int objectGridPosition, GameObject objectGameObject, string type, Direction arrowDirection, Sprite objectSprite)
         {
-            this.arrowGridPosition = arrowGridPosition;
-            this.arrowGameObject = arrowGameObject;
+            this.objectGridPosition = objectGridPosition;
+            this.objectGameObject = objectGameObject;
+            this.type = type;
             this.arrowDirection = arrowDirection;
-            SetArrowSprite();
-            SetArrowGameObject();
-
+            this.objectSprite = objectSprite;
         }
-         public Direction GetArrowDirection()
+        public Vector2Int GetObjectGridPosition()
+        {
+            return objectGridPosition; 
+        }
+        public GameObject GetObjectGameObject()
+        {
+            return objectGameObject; 
+        }
+        public string GetObjectType()
+        {
+            return type;
+        }
+        public void SetObjectGridPosition(Vector2Int newObjectGridPosition)
+        {
+            objectGridPosition = newObjectGridPosition;
+            objectGameObject.transform.position = new Vector3(objectGridPosition.x, objectGridPosition.y);
+        }
+        public Direction GetArrowDirection()
         {
             return arrowDirection;
         }
-
-        public GameObject GetArrowGameObject()
+        public void SetObjectSprite(Sprite newObjectSprite)
         {
-            return arrowGameObject; 
+            objectSprite = newObjectSprite;
+            objectGameObject.GetComponent<SpriteRenderer>().sprite = objectSprite;
         }
-
-        public Vector2Int GetArrowGridPosition()
+        public void SetObjectType(string newType)
         {
-            return arrowGridPosition;
-        }
-
-        public void SetArrowSprite()
-        {
-            switch (arrowDirection)
-            {
-                case Direction.Left:
-                    arrowSprite = GameAssets.gameAssets.leftArrow;
-                    break;
-                case Direction.Right:
-                    arrowSprite = GameAssets.gameAssets.rightArrow;
-                    break;
-                case Direction.Up:
-                    arrowSprite = GameAssets.gameAssets.upArrow;
-                    break;
-                case Direction.Down:
-                    arrowSprite = GameAssets.gameAssets.downArrow;
-                    break;
-            }
-            
-        }
-
-        public void SetArrowGameObject()
-        {
-            arrowGameObject = new GameObject("Arrow", typeof(SpriteRenderer));
-            arrowGameObject.GetComponent<SpriteRenderer>().sprite = arrowSprite;
-            arrowGameObject.GetComponent<SpriteRenderer>().sortingLayerName = "Objects";
-            arrowGameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
-            arrowGameObject.transform.position = new Vector3(arrowGridPosition.x, arrowGridPosition.y, 0);
+            type = newType;
+            objectGameObject.name = type;
         }
     }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is create
-
-    // Update is called once per frame
     private void Update()
     {
-
-        EnableArrowApples();
-        EnableObstacles();
-        //EnableChainedApples();
-        //EnableBoxes();
+        if (enableAppleArrows)
+        {
+            EnableArrowApples();
+        }
+        if (enableObstacles)
+        {
+            EnableObstacles();
+        }
+        if (enableChainedApples)
+        {
+            EnableChainedApples();
+        }
+        if (enableBoxes)
+        {
+            EnableBoxes();
+        }
+        if (enableNormalMode)
+        {
+            EnableNormalMode();
+        }
         
+       
     }
 
+    private void EnableRandomMode()
+    {
+        enableChainedApples = false;
+        enableBoxes = false;
+        enableAppleArrows = false;
+        enableNormalMode = false;
+
+        int randNum = UnityEngine.Random.Range(0, 4);
+        Debug.Log(randNum);
+        if(randNum == 0)
+        {
+            enableAppleArrows = true;
+
+        }else if(randNum == 1)
+        {
+            enableBoxes = true;
+        }else if (randNum == 2)
+        {
+            enableChainedApples = true;
+        }
+        else if(randNum == 3)
+        {
+            enableNormalMode = true;
+        }
+        
+        
+
+    }
     private void EnableObstacles()
     {
 
         if (spawnTimer > spawnRate)
         {
-            SpawnObstacle();
+            SpawnObject("Obstacle");
             spawnTimer = 0f;
-            Invoke("DeleteObstacle", 20f);
+            Invoke("DeleteObstacle", 5f);
+            //spawnRate = UnityEngine.Random.Range(spawnRateRef, spawnRateRef + 1f);
         }
         spawnTimer += Time.deltaTime;
 
     }
-
     private void EnableBoxes()
     {
+        bool isBox = false;
         if (!boxesEnabled)
         {
-            SpawnBox();
+            SpawnObject("Box");
+            SpawnObject("BoxUnlock");
             boxesEnabled = true;
-           
+
         }
         
-        bool boxCollisionedUnlock = TryBoxCollisionUnlock();
-        bool boxCollisionedObstacle = TryBoxCollisionObstacle();
-        if (boxCollisionedUnlock)
+        for(int i = 0; i<objectsList.Count; i++)
         {
-            SpawnFood(boxGridPosition);
-            SpawnBox();
+            if (objectsList[i].GetObjectType() == "BoxUnlock" )
+            {
+                isBox = true;
+            }
+            
         }
-        if (boxCollisionedObstacle)
+        if (!isBox)
         {
-
-            boxGridPosition = new Vector2Int(UnityEngine.Random.Range(2, width - 1), UnityEngine.Random.Range(2, height - 1));
-            boxGameObject.transform.position = new Vector3(boxGridPosition.x, boxGridPosition.y, 0);
-            objectsGridPositionList.Add(boxGridPosition);
+            if (!randomModeEnabled)
+            {
+                SpawnObject("BoxUnlock");
+            }
+            else
+            {
+                Destroy(GetFullObjectsTypeList("Box")[0].GetObjectGameObject());
+                objectsList.Remove((GetFullObjectsTypeList("Box")[0]));
+                boxesEnabled = false;
+                EnableRandomMode();
+            }
+                
         }
 
     }
-
-   
-
     private void EnableChainedApples()
     {
+        bool isChainedApple = false;
         if (!chainedApplesEnabled)
         {
-            SpawnAppleChained();
+            SpawnObject("Key");
+            SpawnObject("ChainedApple");
             chainedApplesEnabled = true;
+
         }
-        
+
+        for (int i = 0; i < objectsList.Count; i++)
+        {
+            if (objectsList[i].GetObjectType() == "UnchainedApple" || objectsList[i].GetObjectType()=="ChainedApple")
+            {
+                isChainedApple = true;
+            }
+
+        }
+        if (!isChainedApple)
+        {
+            if (!randomModeEnabled)
+            {
+                SpawnObject("Key");
+                SpawnObject("ChainedApple");
+
+            }
+            else
+            {
+                chainedApplesEnabled = false;
+                EnableRandomMode();
+            }
+            
+        }
+
     }
 
     private void EnableNormalMode()
     {
 
-        if(foodGameObject == null)
+        bool isFood = false;
+        if (!normalModeEnabled)
         {
-            SpawnFood();
+            SpawnObject("Food");
+            
+            normalModeEnabled = true;
+
+        }
+
+        for (int i = 0; i < objectsList.Count; i++)
+        {
+            if (objectsList[i].GetObjectType() == "Food")
+            {
+                isFood = true;
+            }
+
+        }
+        if (!isFood)
+        {
+            if (!randomModeEnabled)
+            {
+                SpawnObject("Food");
+            }
+            else
+            {
+                normalModeEnabled = false;
+                EnableRandomMode();
+            }
+           
         }
     }
 
     private void EnableArrowApples()
     {
+        bool isAppleArrow = false;
         if (!appleArrowsEnabled)
         {
-            SpawnArrowApple();
+
+            SpawnObject("ArrowApple");
+
             appleArrowsEnabled = true;
+        }
+        for (int i = 0; i < objectsList.Count; i++)
+        {
+            if (objectsList[i].GetObjectType() == "ArrowApple")
+            {
+                isAppleArrow = true;
+            }
+
+        }
+        if (!isAppleArrow)
+        {
+            if (!randomModeEnabled)
+            {
+                SpawnObject("ArrowApple");
+            }
+            else
+            {
+                appleArrowsEnabled = false;
+                EnableRandomMode();
+            }
+           
+
         }
     }
 
     private GameObject CreateGameObject(string name, Vector2Int position, Sprite sprite, int sortOrder = 1, 
         string sortingLayerName = "Default")
     {
-        objectsGridPositionList.Add(position);
+        
         GameObject gameObject;
         gameObject = new GameObject(name, typeof(SpriteRenderer));
         gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
-        gameObject.GetComponent<SpriteRenderer>().sortingLayerName = sortingLayerName;
         gameObject.GetComponent<SpriteRenderer>().sortingOrder = sortOrder;
+        gameObject.GetComponent<SpriteRenderer>().sortingLayerName = sortingLayerName;
+        
         gameObject.transform.position = new Vector3(position.x, position.y, 0);
         return gameObject;
 
     }
 
-    
-
-
-    private void SpawnFood(Vector2Int foodPosition = default)
+    public List<Vector2Int> GetFullObjectsGridPositionList(string type = "None")
     {
-        if(foodPosition == default)
+
+        List<Vector2Int> gridPositionList = new List<Vector2Int>();
+        foreach (Object GameObject in objectsList)
         {
-            do
+            if(type == "None")
             {
-                foodGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
-            } while (snake.GetFullSnakeGridPositionList().IndexOf(foodGridPosition) != -1 || objectsGridPositionList.Contains(foodGridPosition));
-
-        }
-        else
-        {
-            foodGridPosition = foodPosition;
-        }
-
-        foodGameObject = CreateGameObject("Food", foodGridPosition, GameAssets.gameAssets.apple, 0, "Objects");
-
-        foodList.Add(new Food(foodGridPosition, foodGameObject));
-
-    }
-    private void SpawnBox()
-    {
-
-        do
-        {
-            boxGridPosition = new Vector2Int(UnityEngine.Random.Range(2, width-1), UnityEngine.Random.Range(2, height-1));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(boxGridPosition) != -1) || objectsGridPositionList.Contains(boxGridPosition));
-
-        boxGameObject = CreateGameObject("Box", boxGridPosition, GameAssets.gameAssets.box, 1, "Objects");
-
-        do
-        {
-            boxUnlockGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(boxUnlockGridPosition) != -1) || objectsGridPositionList.Contains(boxUnlockGridPosition));
-
-        boxUnlockGameObject = CreateGameObject("BoxUnlock",boxUnlockGridPosition, GameAssets.gameAssets.boxUnlock,0, "Objects");
-
-
-    }
-
-    private void SpawnAppleChained()
-    {
-
-        do
-        {
-            chainedGridPosition = new Vector2Int(UnityEngine.Random.Range(2, width - 1), UnityEngine.Random.Range(2, height - 1));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(chainedGridPosition) != -1) || objectsGridPositionList.Contains(chainedGridPosition));
-
-        chainedGameObject = CreateGameObject("Locker", chainedGridPosition, GameAssets.gameAssets.locker, 1, "Objects");
-
-        do
-        {
-            keyGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(keyGridPosition) != -1) || objectsGridPositionList.Contains(keyGridPosition));
-
-        if(obstaclesList.Count > 0)
-        {
-            for (int i = 0; i < obstaclesList.Count; i++)
+                gridPositionList.Add(GameObject.GetObjectGridPosition());
+            }
+            else
             {
-                if ((obstaclesList[i].GetObstacleGridPosition().x == width - 2 && obstaclesList[i].GetObstacleGridPosition().y == height - 1 && keyGridPosition.x == width -1 && keyGridPosition.y ==height-1)
-                    || (obstaclesList[i].GetObstacleGridPosition().x == 2 && obstaclesList[i].GetObstacleGridPosition().y == height - 1 && keyGridPosition.x == 1 && keyGridPosition.y == height - 1)
-                    || (obstaclesList[i].GetObstacleGridPosition().x == 2  && obstaclesList[i].GetObstacleGridPosition().y ==  1 && keyGridPosition.x == 1 && keyGridPosition.y == 1)
-                    || (obstaclesList[i].GetObstacleGridPosition().x == width-1 && obstaclesList[i].GetObstacleGridPosition().y == 2 && keyGridPosition.x == width -1 && keyGridPosition.y == 1))
+                if(GameObject.GetObjectType() == type)
                 {
-                    keyGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                    gridPositionList.Add(GameObject.GetObjectGridPosition());
+                }
+            }
+            
+        }
+        return gridPositionList;
+    }
+
+    public List<Object> GetFullObjectsTypeList(string type = "None")
+    {
+
+        List<Object> ObjectList = new List<Object>();
+        foreach (Object GameObject in objectsList)
+        {
+            if (type == "None")
+            {
+                ObjectList.Add(GameObject);
+            }
+            else
+            {
+                if (GameObject.GetObjectType() == type)
+                {
+                    ObjectList.Add(GameObject);
                 }
             }
 
         }
-        
-
-        keyGameObject = CreateGameObject("Key", keyGridPosition, GameAssets.gameAssets.key, 0, "Objects");
-        SpawnFood(chainedGridPosition);
-
-        
-
+        return ObjectList;
     }
 
-    private void SpawnObstacle()
+    private bool CheckRestrictions(Vector2Int objectGridPosition, string type,Direction appleGridDirection = default)
     {
-        spawnRate = UnityEngine.Random.Range(spawnRateRef, spawnRateRef + 15f);
-        do
+        if ((snake.GetFullSnakeGridPositionList().IndexOf(objectGridPosition) != -1) || GetFullObjectsGridPositionList().IndexOf(objectGridPosition) != -1)
         {
-            obstacleGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(obstacleGridPosition) != -1) 
-        || objectsGridPositionList.Contains(obstacleGridPosition)
-        || (appleArrowsEnabled && (obstacleGridPosition.x == arrow.GetArrowGridPosition().x + 1 && arrow.GetArrowDirection() == Direction.Left)
-        || (appleArrowsEnabled && (obstacleGridPosition.x == arrow.GetArrowGridPosition().x - 1 && arrow.GetArrowDirection() == Direction.Right))
-        || (appleArrowsEnabled && (obstacleGridPosition.y == arrow.GetArrowGridPosition().y + 1 && arrow.GetArrowDirection() == Direction.Down))
-        || (appleArrowsEnabled && (obstacleGridPosition.y == arrow.GetArrowGridPosition().y - 1 && arrow.GetArrowDirection() == Direction.Up)))
-        || (chainedApplesEnabled && ( keyGridPosition.x == width -1 && keyGridPosition.y == height -1 && (obstacleGridPosition.x == width - 2 || obstacleGridPosition.y == height - 2)))
-        || (chainedApplesEnabled && (keyGridPosition.x == 1 && keyGridPosition.y == 1 && (obstacleGridPosition.x == 2 || obstacleGridPosition.y == 2)))
-        );
+            return false;
+        }
 
-        obstacleGameObject = CreateGameObject("Obstacle", obstacleGridPosition, GameAssets.gameAssets.obstacle,0,"Objects");
-       
-        obstacleGameObject.transform.SetParent(GameAssets.gameAssets.obstacles.transform);
-        obstacleGameObject.GetComponent<SpriteRenderer>().color = new Color(0.1254902f, 0.3490196f, 0f);
-        obstaclesList.Add(new Obstacle(obstacleGridPosition, obstacleGameObject));
+        if ((GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x + 1, objectGridPosition.y)))
+            && (GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x - 1, objectGridPosition.y)))
+            && (GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x, objectGridPosition.y - 1))))
+        {
+            return false;
+        }
+
+        
+
+        if ((objectGridPosition.x == 1 && objectGridPosition.y == 1) && (GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x + 1, objectGridPosition.y)) && GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x, objectGridPosition.y + 1)))
+            || (objectGridPosition.x == 1 && objectGridPosition.y == height - 1) && (GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x + 1, objectGridPosition.y)) && GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x, objectGridPosition.y - 1)))
+            || (objectGridPosition.x == width - 1 && objectGridPosition.y ==  1) && (GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x - 1, objectGridPosition.y)) && GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x, objectGridPosition.y + 1)))
+            || (objectGridPosition.x == width - 1 && objectGridPosition.y == height - 1) && (GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x - 1, objectGridPosition.y)) && GetFullObjectsGridPositionList("Obstacle").Contains(new Vector2Int(objectGridPosition.x, objectGridPosition.y - 1)))
+            )
+        {
+            return false;
+        }
 
 
 
+        if (type == "Obstacle")
+        {
+            if (objectGridPosition.x == width / 2 && objectGridPosition.y == height / 2)
+            {
+                return false;
+            }
+            else if (objectGridPosition.x == width / 2 + 1 && objectGridPosition.y == height / 2 + 1)
+            {
+                return false;
+            }
+            else if (objectGridPosition.x == width / 2 && objectGridPosition.y == height / 2 + 1)
+            {
+                return false;
+            }
+            else if (objectGridPosition.x == width / 2 + 1 && objectGridPosition.y == height / 2)
+            {
+                return false;
+            }
+            else if (objectGridPosition.x == width / 2 - 1 && objectGridPosition.y == height / 2 - 1)
+            {
+                return false;
+            }
+            else if (objectGridPosition.x == width / 2 && objectGridPosition.y == height / 2 - 1)
+            {
+                return false;
+            }
+            else if (objectGridPosition.x == width / 2 - 1 && objectGridPosition.y == height / 2)
+            {
+                return false;
+            }
+
+            //(GetFullObjectsGridPositionList("ArrowApple").Contains(new Vector2Int(objectGridPosition.x + 1, objectGridPosition.y)))
+            for (int i = 0; i < objectsList.Count; i++)
+            {
+                if (objectsList[i].GetObjectType() == "ArrowApple" && ((GetFullObjectsGridPositionList("ArrowApple").Contains(new Vector2Int(objectGridPosition.x - 1, objectGridPosition.y))) && objectsList[i].GetArrowDirection() == Direction.Left))
+                {
+                    return false;
+                }
+                else if (objectsList[i].GetObjectType() == "ArrowApple" && ((GetFullObjectsGridPositionList("ArrowApple").Contains(new Vector2Int(objectGridPosition.x + 1, objectGridPosition.y))) && objectsList[i].GetArrowDirection() == Direction.Right))
+                {
+                    return false;
+                }
+                else if (objectsList[i].GetObjectType() == "ArrowApple" && ((GetFullObjectsGridPositionList("ArrowApple").Contains(new Vector2Int(objectGridPosition.x, objectGridPosition.y-1))) && objectsList[i].GetArrowDirection() == Direction.Down))
+                {
+                    return false;
+                }
+                else if (objectsList[i].GetObjectType() == "ArrowApple" && ((GetFullObjectsGridPositionList("ArrowApple").Contains(new Vector2Int(objectGridPosition.x , objectGridPosition.y+1))) && objectsList[i].GetArrowDirection() == Direction.Up))
+                {
+                    return false;
+                }
+            }
+
+            for(int i = 0; i < objectsList.Count; i++)
+            {
+                if((objectGridPosition.x == 2 && objectGridPosition.y == 1) && (objectsList[i].GetObjectGridPosition().x == 1 && objectsList[i].GetObjectGridPosition().y == 1))
+                {
+                    return false;
+                }else if((objectGridPosition.x == 2 && objectGridPosition.y == height - 1) && (objectsList[i].GetObjectGridPosition().x == 1 && objectsList[i].GetObjectGridPosition().y == height - 1)){
+                    return false;
+                }else if((objectGridPosition.x == width - 2 && objectGridPosition.y == 1) && (objectsList[i].GetObjectGridPosition().x == width - 1 && objectsList[i].GetObjectGridPosition().y == 1)){
+                    return false;
+                }else if((objectGridPosition.x == width - 2 && objectGridPosition.y == height - 1) && (objectsList[i].GetObjectGridPosition().x == width - 1 && objectsList[i].GetObjectGridPosition().y == height - 1))
+                {
+                    return false; 
+                }
+
+                       
+                
+            
+            }
+
+            return true;
+        }
+
+        if(type == "ArrowApple")
+        {
+            
+            if (appleGridDirection == Direction.Right)
+            {
+                if(objectGridPosition.x == 1)
+                {
+                    return false;
+                }
+
+                for (int i = 0;i< GetFullObjectsTypeList("Obstacle").Count; i++)
+                {
+                    if((objectGridPosition.x == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x + 1) && (objectGridPosition.y == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y))
+                    {
+                        return false;
+                    }
+
+                    
+                }
+            }else if(appleGridDirection == Direction.Left)
+            {
+                if (objectGridPosition.x == width - 1 )
+                {
+                    return false;
+                }
+                for (int i = 0; i < GetFullObjectsTypeList("Obstacle").Count; i++)
+                {
+                    if ((objectGridPosition.x == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x - 1) && (objectGridPosition.y == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y))
+                    {
+                        return false;
+                    }
+
+
+                }
+            }
+            else if(appleGridDirection == Direction.Up)
+            {
+                if (objectGridPosition.y == 1)
+                {
+                    return false;
+                }
+                for (int i = 0; i < GetFullObjectsTypeList("Obstacle").Count; i++)
+                {
+                    if ((objectGridPosition.x == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x) && (objectGridPosition.y == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y + 1))
+                    {
+                        return false;
+                    }
+                    if (((objectGridPosition.x == 1 && objectGridPosition.y ==  2) && (GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x == 2) && GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y == 1)
+                        || ((objectGridPosition.x == width - 1 && objectGridPosition.y ==  2) && (GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x == width - 2) && GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y == 1)
+                        )
+                    {
+                        return false;
+                    }
+
+
+                }
+
+
+            }else if(appleGridDirection == Direction.Down)
+            {
+                if (objectGridPosition.y == height - 1)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < GetFullObjectsTypeList("Obstacle").Count; i++)
+                {
+                    if ((objectGridPosition.x == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x) && (objectGridPosition.y == GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y - 1))
+                    {
+                        return false;
+                    }
+                    if(((objectGridPosition.x == 1 && objectGridPosition.y == height -2) && (GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x == 2) && GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y == height - 1)
+                        || ((objectGridPosition.x == width - 1 && objectGridPosition.y == height - 2) && (GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().x == width - 2) && GetFullObjectsTypeList("Obstacle")[i].GetObjectGridPosition().y == height - 1)
+                        )
+                    {
+                        return false;
+                    }
+
+
+                }
+
+            }
+            return true;
+
+        }
+
+        
+        return true;
+        
+        
+    }
+
+    private void SpawnObject(string name, Vector2Int objectGridPosition = default)
+    {
+        GameObject objectGameObject;
+        Sprite sprite = null;
+        Direction snakeGridDirection = default;
+        int sortOrder = 0;
+        string sortingLayerName = "Objects";
+        if(name == "Box")
+        {
+            sprite = GameAssets.gameAssets.box;
+            sortOrder = 1;
+
+            if (objectGridPosition == default)
+            {
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(2, width-1), UnityEngine.Random.Range(2, height-1));
+                } while (snake.GetFullSnakeGridPositionList().IndexOf(objectGridPosition) != -1 || GetFullObjectsGridPositionList().IndexOf(objectGridPosition) != -1);
+            }
+        }
+        else if(name == "BoxUnlock")
+        {
+            if (objectGridPosition == default)
+            {
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                } while (snake.GetFullSnakeGridPositionList().IndexOf(objectGridPosition) != -1 || GetFullObjectsGridPositionList().IndexOf(objectGridPosition) != -1);
+            }
+            sprite = GameAssets.gameAssets.boxUnlock;
+            
+        }else if(name == "ChainedApple")
+        {
+            if (objectGridPosition == default)
+            {
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                } while (!CheckRestrictions(objectGridPosition, name));
+            }
+            sprite = GameAssets.gameAssets.locker;
+            
+        }else if(name == "Food" || name == "UnchainedApple")
+        {
+            if (objectGridPosition == default)
+            {
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                } while (!CheckRestrictions(objectGridPosition, name));
+            }
+            sprite = GameAssets.gameAssets.apple;
+        }else if(name == "Key")
+        {
+            if (objectGridPosition == default)
+            {
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                } while (!CheckRestrictions(objectGridPosition,name));
+            }
+            sprite = GameAssets.gameAssets.key;
+        }else if(name == "Obstacle")
+        {
+            if(objectGridPosition == default)
+            {
+               
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                } while (!CheckRestrictions(objectGridPosition, name));
+
+            }
+
+            
+            sprite = GameAssets.gameAssets.obstacle;
+            
+
+
+        }
+        else if(name == "ArrowApple")
+        {
+            snakeGridDirection = GetRandomDirection();
+            
+            if (objectGridPosition == default)
+            {
+                do
+                {
+                    objectGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
+                } while (!CheckRestrictions(objectGridPosition,name,snakeGridDirection));
+            }
+            switch (snakeGridDirection)
+            {
+                case Direction.Left:
+                    sprite = GameAssets.gameAssets.leftArrow;
+
+                    break;
+                case Direction.Right:
+                    sprite = GameAssets.gameAssets.rightArrow;
+                    break;
+                case Direction.Up:
+                    sprite = GameAssets.gameAssets.upArrow;
+                    break;
+                case Direction.Down:
+                    sprite = GameAssets.gameAssets.downArrow;
+                    break;
+            }
+
+
+
+
+        }
+
+        
+        objectGameObject = CreateGameObject(name, objectGridPosition, sprite, sortOrder, sortingLayerName);
+        objectsList.Add(new Object(objectGridPosition, objectGameObject, name, snakeGridDirection, sprite));
+    }
+
+    public bool ObjectCollisionBorder(Vector2Int objectGridPosition)
+    {
+        if (objectGridPosition.x == 0 || objectGridPosition.y == 0 || objectGridPosition.x == width || objectGridPosition.y == height)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool BoxCollisionSnake(Vector2Int objectGridPosition)
+    {
+        
+        if (snake.GetFullSnakeGridPositionList().GetRange(1, snake.GetFullSnakeGridPositionList().Count-1).IndexOf(objectGridPosition) != -1)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    public string TrySnakeCollisionObject(Vector2Int snakeGridPosition, Direction snakeGridMoveDirection, Vector2Int snakeGridMoveDirectionVector)
+    {
+        if(objectsList.Count > 0)
+        {
+            for (int i = 0; i < objectsList.Count; i++)
+            {
+
+                if (objectsList[i].GetObjectGridPosition() == snakeGridPosition)
+                {
+                    string objectType = objectsList[i].GetObjectType();
+                    if (objectType == "Food" || objectType == "UnchainedApple")
+                    {
+                        Destroy(objectsList[i].GetObjectGameObject());
+                        objectsList.Remove(objectsList[i]);
+
+                    }
+                    if (objectType == "Box")
+                    {
+                        
+                        if(objectsList.Count > 0)
+                        {
+                            objectsList[i].SetObjectGridPosition(objectsList[i].GetObjectGridPosition() + snakeGridMoveDirectionVector);
+                            
+                            for (int j = 0; j < objectsList.Count; j++)
+                            {
+                                
+                                
+                                string secondObjectType = objectsList[j].GetObjectType();
+                                
+                                if (secondObjectType == "BoxUnlock" && objectsList[i].GetObjectGridPosition() == objectsList[j].GetObjectGridPosition())
+                                {
+
+                                    objectsList[j].SetObjectSprite(GameAssets.gameAssets.apple);
+                                    objectsList[j].SetObjectType("Food");
+                                }
+                                
+                                if (((secondObjectType == "Obstacle" || secondObjectType == "ChainedApple" || secondObjectType == "BoxUnlock") && objectsList[j].GetObjectGridPosition() == objectsList[i].GetObjectGridPosition()) ||
+                                   ObjectCollisionBorder(objectsList[i].GetObjectGridPosition()) || BoxCollisionSnake(objectsList[i].GetObjectGridPosition()))
+                                {
+                                    Destroy(objectsList[i].GetObjectGameObject());
+                                    objectsList.Remove(objectsList[i]);
+                                    SpawnObject("Box");
+                                    
+                                    break;
+                                    
+                                }
+
+                               
+                            }
+
+
+                        }
+                        
+                    }
+                    if (objectType == "Key")
+                    {
+                        Destroy(objectsList[i].GetObjectGameObject());
+                        objectsList.Remove(objectsList[i]);
+                        if (objectsList.Count > 0)
+                        {
+                            for (int k = 0; k < objectsList.Count; k++)
+                            {
+                                if (objectsList[k].GetObjectType() == "ChainedApple")
+                                {
+                                    SpawnObject("UnchainedApple", objectsList[k].GetObjectGridPosition());
+                                    Destroy(objectsList[k].GetObjectGameObject());
+                                    objectsList.Remove(objectsList[k]);
+
+                                    
+                                }
+                            }
+
+                        }
+                        
+                        
+                    }
+                    if (objectType == "ArrowApple")
+                    {
+                        
+                        
+                        if (objectsList[i].GetArrowDirection() == snakeGridMoveDirection)
+                        {
+                            
+                            Destroy(objectsList[i].GetObjectGameObject());
+                            objectsList.Remove(objectsList[i]);
+                            return "Food";
+                           
+                        }
+                    }
+                    return objectType;
+                }
+
+            }
+
+        }
+        
+        if (ObjectCollisionBorder(snakeGridPosition))
+        {
+            return "Border";
+        }
+        return "";
     }
     Direction GetRandomDirection()
     {
@@ -368,241 +808,19 @@ public class ObjectSpawner : MonoBehaviour
         return values[index];
     }
 
-    private void SpawnArrowApple()
-    {
-        do
-        {
-            arrowGridPosition = new Vector2Int(UnityEngine.Random.Range(1, width), UnityEngine.Random.Range(1, height));
-        } while ((snake.GetFullSnakeGridPositionList().IndexOf(arrowGridPosition) != -1) || objectsGridPositionList.Contains(arrowGridPosition));
-
-        Direction randomDir = GetRandomDirection();
-        for(int i = 0; i < objectsGridPositionList.Count; i++)
-        {
-            if(arrowGridPosition.x == objectsGridPositionList[i].x + 1)
-            {
-                do
-                {
-                    randomDir = GetRandomDirection();
-                } while (randomDir == Direction.Right);
-
-            }
-            if(arrowGridPosition.x == objectsGridPositionList[i].x - 1)
-            {
-
-                do
-                {
-                    randomDir = GetRandomDirection();
-                } while (randomDir == Direction.Left);
-
-            }
-            if(arrowGridPosition.y == objectsGridPositionList[i].y + 1)
-            {
-                do
-                {
-                    randomDir = GetRandomDirection();
-                } while (randomDir == Direction.Up);
-
-            }
-            if(arrowGridPosition.y == objectsGridPositionList[i].y - 1)
-            {
-                do
-                {
-                    randomDir = GetRandomDirection();
-                } while (randomDir == Direction.Down);
-
-            }
-        }
-        if(arrowGridPosition.x == width -1)
-        {
-            Debug.Log("true");
-            do
-            {
-                randomDir = GetRandomDirection();
-            } while( randomDir == Direction.Left);
-
-        }if(arrowGridPosition.x == 1)
-        {
-            do
-            {
-                randomDir = GetRandomDirection();
-            } while (randomDir == Direction.Right);
-
-        }if(arrowGridPosition.y == height - 1)
-        {
-            do
-            {
-                randomDir = GetRandomDirection();
-            } while (randomDir == Direction.Down);
-
-        }if(arrowGridPosition.y == 1)
-        {
-            do
-            {
-                randomDir = GetRandomDirection();
-            } while (randomDir == Direction.Up);
-
-        }
-            arrow = new Arrow(arrowGridPosition, arrowGameObject, randomDir);
-
-        SpawnFood(arrowGridPosition);
-
-    }
+   
     private void DeleteObstacle()
     {
-        Destroy(obstaclesList[0].GetObstacleGameObject());
-        objectsGridPositionList.Remove(obstaclesList[0].GetObstacleGridPosition());
-        obstaclesList.Remove(obstaclesList[0]);
-        
-    }
-    public void MoveBox(Vector2Int gridMoveDirection)
-    {
-        boxGridPosition += gridMoveDirection;
-        boxGameObject.transform.position = new Vector3(boxGridPosition.x, boxGridPosition.y, 0);
-        objectsGridPositionList.Add(boxGridPosition);
-    }
-    public bool TrySnakeEatFood(Vector2Int snakeGridPosition, Direction snakeGridDirection)
-    {
-        for(int i = 0; i < foodList.Count; i++)
+        for(int i = 0; i<objectsList.Count; i++)
         {
-            if (foodList[i].GetFoodGridPosition() == snakeGridPosition && (foodList[i].GetFoodGridPosition() != chainedGridPosition || chainedGameObject == null)
-                && (arrow == null || foodList[i].GetFoodGridPosition() != arrow.GetArrowGridPosition() || arrow.GetArrowDirection() == snakeGridDirection))
+            if(objectsList[i].GetObjectType() == "Obstacle")
             {
-                Destroy(foodList[i].GetFoodGameObject());
-                objectsGridPositionList.Remove(foodList[i].GetFoodGridPosition());
-                foodList.Remove(foodList[i]);
-                return true;
+                Destroy(objectsList[i].GetObjectGameObject());
+                objectsList.Remove(objectsList[i]);
+                break;
             }
-        }
-        return false;
-
-    }
-    public bool TrySnakeCollisionBorder(Vector2Int snakeGridPosition)
-    {
-
-        if (snakeGridPosition.x == 0 || snakeGridPosition.y == 0 || snakeGridPosition.x == width|| snakeGridPosition.y == height)
-        {
-            return true;
-        }
-
-        return false;
-    }
-    public bool TrySnakeCollisioningBox(Vector2Int snakeGridPosition)
-    {
-        if (snakeGridPosition == boxGridPosition)
-        {
-            objectsGridPositionList.Remove(boxGridPosition);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
-    public bool TrySnakeCollisionObstacle(Vector2Int snakeGridPosition)
-    {
-        for (int i = 0; i < obstaclesList.Count; i++)
-        {
-            if (obstaclesList[i].GetObstacleGridPosition() == snakeGridPosition)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private bool TryBoxCollisionUnlock()
-    {
-        if (boxGridPosition == boxUnlockGridPosition)
-        {
-            Destroy(boxGameObject);
-            Destroy(boxUnlockGameObject);
-            objectsGridPositionList.Remove(boxGridPosition);
-            objectsGridPositionList.Remove(boxUnlockGridPosition);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    public void TrySnakeCollisionKey(Vector2Int snakeGridPosition)
-    {
-        if (snakeGridPosition == keyGridPosition)
-        {
-            Destroy(keyGameObject);
-            Destroy(chainedGameObject);
-            objectsGridPositionList.Remove(keyGridPosition);
-            
         }
         
     }
-
-    public void TrySnakeCollisionArrowApple(Vector2Int snakeGridPosition, Direction snakeDirection)
-    {
-        if (appleArrowsEnabled)
-        {
-            if (snakeGridPosition == arrowGridPosition && snakeDirection == arrow.GetArrowDirection())
-            {
-                Destroy(arrow.GetArrowGameObject());
-                objectsGridPositionList.Remove(arrow.GetArrowGridPosition());
-                SpawnArrowApple();
-
-            }
-
-        }
-        
-       
-     
-    }
-
-    public bool TrySnakeCollisionChainedApple(Vector2Int snakeGridPosition)
-    {
-        if (chainedApplesEnabled)
-        {
-            if (snakeGridPosition == chainedGridPosition && chainedGameObject != null)
-            {
-                return true;
-            }
-            else if (snakeGridPosition == chainedGridPosition && chainedGameObject == null)
-            {
-                objectsGridPositionList.Remove(chainedGridPosition);
-                SpawnAppleChained();
-                return false;
-            }
-            else
-            {
-                return false;
-            }
-
-        }
-        else
-        {
-            return false;
-        }
-        
-
-    }
-
-    private bool TryBoxCollisionObstacle()
-    {
-        for (int i = 0; i < obstaclesList.Count; i++)
-        {
-            if (obstaclesList[i].GetObstacleGridPosition() == boxGridPosition)
-            {
-                objectsGridPositionList.Remove(boxGridPosition);
-                return true;
-            }
-            
-        }
-        if (boxGridPosition.x == 0 || boxGridPosition.y == 0 || boxGridPosition.x == width || boxGridPosition.y == height)
-        {
-            return true;
-        }
-        if(snake.GetFullSnakeGridPositionList().IndexOf(boxGridPosition) != -1 && snake.GetFullSnakeGridPositionList().IndexOf(boxGridPosition) != 0)
-        {
-            return true;
-        }
-        return false;
-    }
+    
 }

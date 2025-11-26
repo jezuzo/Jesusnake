@@ -48,7 +48,7 @@ public class Snake : MonoBehaviour
     public void BeginGame()
     {
         gridPosition = new Vector2Int(width/2, height/2);
-        Debug.Log(gridPosition);
+        
         gridMoveDirection = Direction.Right;
         gridMoveTimer = gridMoveTimerMax;
         snakeMovePositionList = new List<SnakeMovePosition>();
@@ -200,35 +200,23 @@ public class Snake : MonoBehaviour
             }
             
             gridPosition += gridMoveDirectionVector;
-          
-            bool snakeAteFood = objectSpawner.TrySnakeEatFood(gridPosition, gridMoveDirection);
-            bool snakeCollisionedBorder = objectSpawner.TrySnakeCollisionBorder(gridPosition);
 
             bool snakeCollisionedSnake = TrySnakeCollisionSnake();
-            bool snakeCollisioningBox = objectSpawner.TrySnakeCollisioningBox(gridPosition);
-            bool snakeCollisionedBush = objectSpawner.TrySnakeCollisionObstacle(gridPosition);
-            bool snakeCollisionedChainedApple = objectSpawner.TrySnakeCollisionChainedApple(gridPosition);
-            objectSpawner.TrySnakeCollisionArrowApple(gridPosition, gridMoveDirection);
-            objectSpawner.TrySnakeCollisionKey(gridPosition);
+            string collision = objectSpawner.TrySnakeCollisionObject(gridPosition, gridMoveDirection, gridMoveDirectionVector);
             
-           
-            if (snakeAteFood)
+            if (collision == "Food" || collision == "UnchainedApple")
             {
                 snakeBodySize++;
                 CreateSnakeBody();
                 ScoreManager.scoreManager.addScore(1);
             }
-            if ((snakeCollisionedBorder || snakeCollisionedSnake || snakeCollisionedBush || snakeCollisionedChainedApple))
+            if ((collision == "Border" || snakeCollisionedSnake || collision == "Obstacle" || collision == "ChainedApple"))
             {
                 ResetGame();
             }
             if (snakeCollisionedSnake)
             {
                 Debug.Log("murió por serpiente");
-            }
-            if (snakeCollisioningBox)
-            {
-                objectSpawner.MoveBox(gridMoveDirectionVector);
             }
             
 
@@ -374,7 +362,7 @@ public class Snake : MonoBehaviour
     {
 
         Vector2Int nextGridPosition = gridPosition + gridMoveDirectionVector;
-        List<Vector2Int> gridPositionList = new List<Vector2Int>() { nextGridPosition , gridPosition  };
+        List<Vector2Int> gridPositionList = new List<Vector2Int>() { nextGridPosition,gridPosition  };
         foreach (SnakeMovePosition snakeMovePosition in snakeMovePositionList)
         {
             
