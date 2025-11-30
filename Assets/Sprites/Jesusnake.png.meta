@@ -394,6 +394,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Jesusnake_12
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 25
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e359cb6a4dd6f0540951e5d7f2d54c3d
+      internalID: 1235782973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -414,6 +436,7 @@ TextureImporter:
       Jesusnake_1: 7643515942544648536
       Jesusnake_10: -748927565
       Jesusnake_11: 542911292
+      Jesusnake_12: 1235782973
       Jesusnake_2: -1319261234296012211
       Jesusnake_3: 528250518651869363
       Jesusnake_4: -4994040905844885478

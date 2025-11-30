@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameAssets : MonoBehaviour
 {
@@ -32,6 +33,10 @@ public class GameAssets : MonoBehaviour
     public Sprite locker;
     public Sprite key;
 
+    public Sprite highScoreArrows;
+    public Sprite RandomHighScore;
+
+
     public Tile tile;
     public Transform parentTiles;
     public Transform parentBodyParts;
@@ -40,6 +45,6 @@ public class GameAssets : MonoBehaviour
     public Sprite box;
     public Sprite boxUnlock;
     public Sprite obstacle;
-    public GameObject obstacles;
+    public Image trophy;
 
 }

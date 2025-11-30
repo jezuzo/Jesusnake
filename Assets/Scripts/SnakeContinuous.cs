@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -7,23 +7,15 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SocialPlatforms.Impl;
-public enum Direction
-{
-    Left,
-    Right,
-    Up,
-    Down
-}
 
-public class Snake : MonoBehaviour
+public class SnakeContinuous : MonoBehaviour
 {
-
     private int width;
     private int height;
     // private float gridMoveTimer;         
     // private float timeSinceLastInput = 0f; 
     private Queue<Direction> inputBuffer;
-    public float gridMoveTimerMax;
+    public float gridMoveTimerMax = .1f;
     private Vector2Int gridPosition;
     private Vector2Int gridMoveDirectionVector;
     private Direction gridMoveDirection;
@@ -32,9 +24,7 @@ public class Snake : MonoBehaviour
     private List<SnakeMovePosition> snakeMovePositionList;
     private List<SnakeBodyPart> snakeBodyPartsList;
     private float timeSinceLastInput;
-    private Direction nextDirection; // la dirección que usarás en el próximo movimiento
-
-
+    
     public int maxBufferSize = 2;
 
 
@@ -56,68 +46,39 @@ public class Snake : MonoBehaviour
     {
         while (true)
         {
-            // #1 — USAR LA DIRECCIÓN ACTUAL (gridMoveDirection) PARA ESTE PASO
-            gridMoveDirection = nextDirection;
-
-            // Actualizar vector de movimiento según gridMoveDirection
-            switch (gridMoveDirection)
+            if (inputBuffer.Count > 0)
             {
-                case Direction.Right: gridMoveDirectionVector = new Vector2Int(1, 0);
-                    transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(1).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(0).localPosition = new Vector3(0f,0.2f,0);
-                    transform.GetChild(1).localPosition = new Vector3(0.1f, 0.2f, 0);
-                    break;
-                case Direction.Left: gridMoveDirectionVector = new Vector2Int(-1, 0);
-                    transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(1).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(0).localPosition = new Vector3(0f, -0.2f, 0);
-                    transform.GetChild(1).localPosition = new Vector3(0.1f, -0.2f, 0);
-                    break;
-                case Direction.Up: gridMoveDirectionVector = new Vector2Int(0, 1);
-                    transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(0).localPosition = new Vector3(0.2f, 0f, 0);
-                    transform.GetChild(1).GetComponent<TrailRenderer>().emitting = false;
-                    break;
-                case Direction.Down: gridMoveDirectionVector = new Vector2Int(0, -1);
-                    transform.GetChild(0).GetComponent<TrailRenderer>().emitting = false;
-                    transform.GetChild(1).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(1).localPosition = new Vector3(-0.2f, 0f, 0);
-                    break;
+                Direction next = inputBuffer.Dequeue();
+                if (!AreOpposite(next, gridMoveDirection))
+                {
+                    gridMoveDirection = next;
+                }
             }
 
-            // #2 — Calcular target
+            // actualizar vector
+
             Vector3 startPos = transform.position;
+            switch (gridMoveDirection)
+            {
+                case Direction.Right: gridMoveDirectionVector = new Vector2Int(1, 0); break;
+                case Direction.Left: gridMoveDirectionVector = new Vector2Int(-1, 0); break;
+                case Direction.Up: gridMoveDirectionVector = new Vector2Int(0, 1); break;
+                case Direction.Down: gridMoveDirectionVector = new Vector2Int(0, -1); break;
+            }
+            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
             Vector2Int targetGrid = gridPosition + gridMoveDirectionVector;
             Vector3 targetPos = new Vector3(targetGrid.x, targetGrid.y, 0);
 
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
-
-            objectSpawner.TrySnakeCollisionBox(targetGrid, gridMoveDirection, gridMoveDirectionVector);
-
-            // #3 — Animar movimiento
-            for (float t = 0f; t < gridMoveTimerMax; t += Time.deltaTime)
+            for (float t = 0; t < gridMoveTimerMax; t += Time.deltaTime)
             {
-                float lerp = t / gridMoveTimerMax;
-                transform.position = Vector3.Lerp(startPos, targetPos, lerp);
+                transform.position = Vector3.Lerp(startPos, targetPos, t / gridMoveTimerMax);
                 yield return null;
             }
 
             transform.position = targetPos;
 
-            // #4 — Actualizar grid, cuerpo y colisiones
+            // update grid + cuerpo + colisiones
             ManageGridMovement(targetGrid);
-            ManageCollisions(targetGrid);
-
-            // #5 — Consumir SOLO UNA dirección del buffer y decidir nextDirection
-            if (inputBuffer.Count > 0)
-            {
-                Direction next = inputBuffer.Dequeue();
-                if (!AreOpposite(next, nextDirection))
-                {
-                    nextDirection = next;
-                }
-            }
         }
     }
 
@@ -125,37 +86,12 @@ public class Snake : MonoBehaviour
 
 
 
-    private void ManageCollisions(Vector2Int targetGrid)
-    {
-        bool snakeCollisionedSnake = TrySnakeCollisionSnake();
-        string collision = objectSpawner.TrySnakeCollisionObject(targetGrid, gridMoveDirection, gridMoveDirectionVector);
-
-        if (collision == "Food" || collision == "UnchainedApple")
-        {
-            snakeBodySize++;
-            CreateSnakeBody();
-            gameObject.GetComponent<UnityEngine.TrailRenderer>().time += 0.18f;
-            transform.GetChild(0).GetComponent<TrailRenderer>().time += 0.18f;
-            ScoreManager.scoreManager.addScore(1);
-        }
-
-        if (collision == "Border" || snakeCollisionedSnake || collision == "Obstacle" || collision == "ChainedApple")
-        {
-            ResetGame();
-        }
-
-        if (snakeCollisionedSnake)
-        {
-            Debug.Log("murió por serpiente");
-        }
-    }
 
     public void BeginGame()
     {
         gridPosition = new Vector2Int(width / 2, height / 2);
 
         gridMoveDirection = Direction.Right;
-        nextDirection = Direction.Right;
         gridMoveDirectionVector = new Vector2Int(1, 0);
 
         //gridMoveTimer = 0f; // opcional, si lo usas para otra cosa visual
@@ -169,8 +105,6 @@ public class Snake : MonoBehaviour
         var tr = gameObject.GetComponent<UnityEngine.TrailRenderer>();
         tr.emitting = true;
         tr.time = 0.34f;
-        transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
-        transform.GetChild(0).GetComponent<TrailRenderer>().time = 0.34f;
     }
 
 
@@ -187,34 +121,28 @@ public class Snake : MonoBehaviour
         Direction? dir = null;
 
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame) dir = Direction.Left;
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame) dir = Direction.Right;
-        if (Keyboard.current.upArrowKey.wasPressedThisFrame) dir = Direction.Up;
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame) dir = Direction.Down;
+        else if (Keyboard.current.rightArrowKey.wasPressedThisFrame) dir = Direction.Right;
+        else if (Keyboard.current.upArrowKey.wasPressedThisFrame) dir = Direction.Up;
+        else if (Keyboard.current.downArrowKey.wasPressedThisFrame) dir = Direction.Down;
 
         if (!dir.HasValue) return;
 
         Direction newDir = dir.Value;
 
-        // Última dirección prevista (si hay buffer, la última del buffer, si no, nextDirection)
-        Direction lastRelevant = (inputBuffer.Count > 0) ? LastInQueue(inputBuffer) : nextDirection;
+        // �ltima direcci�n relevante (la actual o la �ltima en buffer)
+        Direction lastDir = (inputBuffer.Count > 0) ? inputBuffer.Peek() : gridMoveDirection;
 
-        // Evitar direcciones imposibles (180°)
-        if (AreOpposite(lastRelevant, newDir))
+        // Evitar direcciones opuestas
+        if (AreOpposite(lastDir, newDir))
             return;
 
-        // No dejar crecer el buffer infinitamente
-        if (inputBuffer.Count < maxBufferSize)
-            inputBuffer.Enqueue(newDir);
+        // Evitar rellenar el buffer de m�s
+        if (inputBuffer.Count >= maxBufferSize)
+            return;
+
+        inputBuffer.Enqueue(newDir);
 
 
-
-    }
-
-    private Direction LastInQueue(Queue<Direction> q)
-    {
-        Direction last = Direction.Right; // default
-        foreach (var d in q) last = d;
-        return last;
     }
 
     private bool AreOpposite(Direction a, Direction b)
@@ -282,7 +210,7 @@ public class Snake : MonoBehaviour
             {
                 gridMoveDirection = nextDirection;
 
-                
+
             }
         }
         if (timeSinceLastInput > gridMoveTimerMax)
@@ -330,28 +258,47 @@ public class Snake : MonoBehaviour
 
     private void ManageGridMovement(Vector2Int targetPosition)
     {
-        
-       
-        
+        // ? Nada de gridMoveTimer aqu�
+        // gridMoveTimer += Time.deltaTime;
+
         SnakeMovePosition previousSnakeMovePosition = null;
         if (snakeMovePositionList.Count > 0)
         {
             previousSnakeMovePosition = snakeMovePositionList[0];
         }
 
-        
+        // La cabeza estaba en gridPosition antes de moverse
         SnakeMovePosition snakeMovePosition =
             new SnakeMovePosition(gridPosition, gridMoveDirection, previousSnakeMovePosition);
         snakeMovePositionList.Insert(0, snakeMovePosition);
 
-        
+        // Ahora actualizamos la gridPosition a la celda destino
         gridPosition = targetPosition;
 
-        
+        // Actualizar cuerpo en base a la nueva lista
         UpdateSnakeBodyParts();
 
-       
-        
+        // --- Colisiones ---
+        bool snakeCollisionedSnake = TrySnakeCollisionSnake();
+        string collision = objectSpawner.TrySnakeCollisionObject(targetPosition, gridMoveDirection, gridMoveDirectionVector);
+
+        if (collision == "Food" || collision == "UnchainedApple")
+        {
+            snakeBodySize++;
+            CreateSnakeBody();
+            gameObject.GetComponent<UnityEngine.TrailRenderer>().time += 0.16f;
+            ScoreManager.scoreManager.addScore(1);
+        }
+
+        if (collision == "Border" || snakeCollisionedSnake || collision == "Obstacle" || collision == "ChainedApple")
+        {
+            ResetGame();
+        }
+
+        if (snakeCollisionedSnake)
+        {
+            Debug.Log("muri� por serpiente");
+        }
 
         if (snakeMovePositionList.Count >= snakeBodySize + 1)
         {
@@ -376,7 +323,6 @@ public class Snake : MonoBehaviour
     {
 
         gameObject.GetComponent<UnityEngine.TrailRenderer>().emitting = false;
-        transform.GetChild(0).GetComponent<TrailRenderer>().emitting =false;
         for (int i = 0; i < snakeBodyPartsList.Count; i++)
         {
             Destroy(snakeBodyPartsList[i].GetSnakeBodyGameObject());

@@ -8,7 +8,7 @@ public class LevelGrid
 {
     public int width;
     public int height;
-    private Snake snake;
+    
     
 
     public void GenerateGrid(int width, int height)
