@@ -306,6 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf43228add96cc34fbbd674d54384a51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonScript
+  mainScreen: {fileID: 591906693065257848, guid: bc088fa574f62574cac930b29cea037a, type: 3}
+  optionsScreen: {fileID: 2474568679879934097, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
 --- !u!1 &7234694412010210607
 GameObject:
   m_ObjectHideFlags: 0

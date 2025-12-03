@@ -244,6 +244,15 @@ MonoBehaviour:
   key: {fileID: 519520332, guid: c9138ff18c3bff046be2dcf197a31277, type: 3}
   highScoreArrows: {fileID: 3264602403859737234, guid: 54688c6826f903a40a623308a5a954d5, type: 3}
   RandomHighScore: {fileID: -5692895459775510314, guid: aeec30aca2a5d6c479bf1038a9f73331, type: 3}
+  slowVelocity: {fileID: 0}
+  mediumVelocity: {fileID: 0}
+  highVelocity: {fileID: 0}
+  noObstacles: {fileID: 0}
+  yesObstacles: {fileID: 0}
+  snakeBlue: {fileID: 0}
+  snakeGreen: {fileID: 0}
+  snakePink: {fileID: 0}
+  snakeRed: {fileID: 0}
   tile: {fileID: 4821833975945815745, guid: 4b0bbdcc629e95e4daf1979f10dbf6d2, type: 3}
   parentTiles: {fileID: 755410600}
   parentBodyParts: {fileID: 286283157}
@@ -1807,11 +1816,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjectSpawner
   spawnRateRef: 2
   enableChainedApples: 0
-  enableBoxes: 1
+  enableBoxes: 0
   enableAppleArrows: 0
   enableNormalMode: 0
   enableObstacles: 0
-  enableRandomMode: 0
+  enableRandomMode: 1
 --- !u!1 &1733917038
 GameObject:
   m_ObjectHideFlags: 0

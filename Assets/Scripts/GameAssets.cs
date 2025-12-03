@@ -35,7 +35,16 @@ public class GameAssets : MonoBehaviour
 
     public Sprite highScoreArrows;
     public Sprite RandomHighScore;
+    public Sprite slowVelocity;
+    public Sprite mediumVelocity;
+    public Sprite highVelocity;
+    public Sprite noObstacles;
+    public Sprite yesObstacles;
 
+    public Sprite snakeBlue;
+    public Sprite snakeGreen;
+    public Sprite snakePink;
+    public Sprite snakeRed;
 
     public Tile tile;
     public Transform parentTiles;

@@ -2,13 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.U2D;
-using UnityEngine.UIElements;
-using static UnityEngine.Tilemaps.TilemapRenderer;
 
 public class ObjectSpawner : MonoBehaviour
 {
@@ -25,12 +19,12 @@ public class ObjectSpawner : MonoBehaviour
     private bool appleArrowsEnabled = false;
     private bool normalModeEnabled = false;
     
-    public bool enableChainedApples = false;
-    public bool enableBoxes = false;
-    public bool enableAppleArrows = false;
-    public bool enableNormalMode = false;
-    public bool enableObstacles = false;
-    public bool enableRandomMode = true;
+    public bool enableChainedApples;
+    public bool enableBoxes;
+    public bool enableAppleArrows;
+    public bool enableNormalMode;
+    public bool enableObstacles;
+    public bool enableRandomMode;
 
     public void Setup(Snake snake, LevelGrid levelGrid)
     {
@@ -46,6 +40,36 @@ public class ObjectSpawner : MonoBehaviour
     }
     private void Start()
     {
+
+        enableChainedApples = false;
+        enableBoxes = false;
+        enableAppleArrows = false;
+        enableNormalMode = false;
+        enableObstacles = false;
+        enableRandomMode = false;
+        enableObstacles = PlayerPrefs.GetInt("Obstacles") == 0 ? false: true;
+
+        switch (PlayerPrefs.GetString("GameMode"))
+        {
+            default:
+                enableNormalMode = true;
+                break;
+            case "NormalMode":
+                enableNormalMode = true;
+                break;
+            case "BoxMode":
+                enableBoxes = true;
+                break;
+            case "ChainedApplesMode":
+                enableChainedApples = true;
+                break;
+            case "ArrowsMode":
+                enableAppleArrows = true;
+                break;
+            case "RandomMode":
+                enableRandomMode = true;
+                break;
+        }
         if (enableRandomMode)
         {
             EnableRandomMode();
@@ -157,7 +181,7 @@ public class ObjectSpawner : MonoBehaviour
         enableNormalMode = false;
 
         int randNum = UnityEngine.Random.Range(0, 4);
-        Debug.Log(randNum);
+       
         if(randNum == 0)
         {
             enableAppleArrows = true;
@@ -737,12 +761,12 @@ public class ObjectSpawner : MonoBehaviour
        
         Vector3 targetPos = new Vector3(targetGrid.x, targetGrid.y, 0);
             
-        for (float t = 0f; t < 0.2f; t += Time.deltaTime)
+        for (float t = 0f; t < PlayerPrefs.GetFloat("SnakeSpeed"); t += Time.deltaTime)
         {
 
             if (boxObject.GetObjectGameObject() != null && boxObject.GetObjectType() == "Box")
             {
-                float lerp = t / 0.2f;
+                float lerp = t / PlayerPrefs.GetFloat("SnakeSpeed");
                 boxObject.GetObjectGameObject().transform.position = Vector3.Lerp(startPos, targetPos, lerp);
                 yield return null;
             }

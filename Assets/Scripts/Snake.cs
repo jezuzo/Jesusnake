@@ -1,12 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SocialPlatforms.Impl;
+
 public enum Direction
 {
     Left,
@@ -33,12 +29,10 @@ public class Snake : MonoBehaviour
     private List<SnakeBodyPart> snakeBodyPartsList;
     private float timeSinceLastInput;
     private Direction nextDirection; // la dirección que usarás en el próximo movimiento
+    private Direction lastDirection;
 
 
     public int maxBufferSize = 2;
-
-
-
 
 
     public void Setup(ObjectSpawner objectSpawner, LevelGrid levelGrid)
@@ -57,34 +51,40 @@ public class Snake : MonoBehaviour
         while (true)
         {
             // #1 — USAR LA DIRECCIÓN ACTUAL (gridMoveDirection) PARA ESTE PASO
-            gridMoveDirection = nextDirection;
+            //gridMoveDirection = nextDirection;
+            lastDirection = gridMoveDirection;
 
-            // Actualizar vector de movimiento según gridMoveDirection
-            switch (gridMoveDirection)
+            switch (lastDirection)
             {
-                case Direction.Right: gridMoveDirectionVector = new Vector2Int(1, 0);
+                case Direction.Right:
+                    
                     transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
                     transform.GetChild(1).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(0).localPosition = new Vector3(0f,0.2f,0);
+                    transform.GetChild(0).localPosition = new Vector3(0f, 0.2f, 0);
                     transform.GetChild(1).localPosition = new Vector3(0.1f, 0.2f, 0);
                     break;
-                case Direction.Left: gridMoveDirectionVector = new Vector2Int(-1, 0);
+                case Direction.Left:
+                    
                     transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
                     transform.GetChild(1).GetComponent<TrailRenderer>().emitting = true;
                     transform.GetChild(0).localPosition = new Vector3(0f, -0.2f, 0);
                     transform.GetChild(1).localPosition = new Vector3(0.1f, -0.2f, 0);
                     break;
-                case Direction.Up: gridMoveDirectionVector = new Vector2Int(0, 1);
+                case Direction.Up:
+                    
                     transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
-                    transform.GetChild(0).localPosition = new Vector3(0.2f, 0f, 0);
                     transform.GetChild(1).GetComponent<TrailRenderer>().emitting = false;
+                    transform.GetChild(0).localPosition = new Vector3(0.2f, 0f, 0);
+
                     break;
-                case Direction.Down: gridMoveDirectionVector = new Vector2Int(0, -1);
+                case Direction.Down:
+                    
                     transform.GetChild(0).GetComponent<TrailRenderer>().emitting = false;
                     transform.GetChild(1).GetComponent<TrailRenderer>().emitting = true;
                     transform.GetChild(1).localPosition = new Vector3(-0.2f, 0f, 0);
                     break;
             }
+
 
             // #2 — Calcular target
             Vector3 startPos = transform.position;
@@ -98,6 +98,7 @@ public class Snake : MonoBehaviour
             // #3 — Animar movimiento
             for (float t = 0f; t < gridMoveTimerMax; t += Time.deltaTime)
             {
+
                 float lerp = t / gridMoveTimerMax;
                 transform.position = Vector3.Lerp(startPos, targetPos, lerp);
                 yield return null;
@@ -116,6 +117,7 @@ public class Snake : MonoBehaviour
                 if (!AreOpposite(next, nextDirection))
                 {
                     nextDirection = next;
+                    
                 }
             }
         }
@@ -128,7 +130,8 @@ public class Snake : MonoBehaviour
     private void ManageCollisions(Vector2Int targetGrid)
     {
         bool snakeCollisionedSnake = TrySnakeCollisionSnake();
-        string collision = objectSpawner.TrySnakeCollisionObject(targetGrid, gridMoveDirection, gridMoveDirectionVector);
+       
+        string collision = objectSpawner.TrySnakeCollisionObject(targetGrid, lastDirection, gridMoveDirectionVector);
 
         if (collision == "Food" || collision == "UnchainedApple")
         {
@@ -152,6 +155,7 @@ public class Snake : MonoBehaviour
 
     public void BeginGame()
     {
+        gridMoveTimerMax = PlayerPrefs.GetFloat("SnakeSpeed");
         gridPosition = new Vector2Int(width / 2, height / 2);
 
         gridMoveDirection = Direction.Right;
@@ -171,6 +175,11 @@ public class Snake : MonoBehaviour
         tr.time = 0.34f;
         transform.GetChild(0).GetComponent<TrailRenderer>().emitting = true;
         transform.GetChild(0).GetComponent<TrailRenderer>().time = 0.34f;
+
+        Debug.Log("Velocidad de la serpiente: " + PlayerPrefs.GetFloat("SnakeSpeed"));
+        Debug.Log("Tamaño del tablero: " + PlayerPrefs.GetInt("TableSize"));
+        Debug.Log("Obstáculos: " + PlayerPrefs.GetInt("Obstacles"));
+        Debug.Log("Modo de juego: " + PlayerPrefs.GetString("GameMode"));
     }
 
 
@@ -182,30 +191,7 @@ public class Snake : MonoBehaviour
     private void Update()
     {
 
-        if (Keyboard.current == null) return;
-
-        Direction? dir = null;
-
-        if (Keyboard.current.leftArrowKey.wasPressedThisFrame) dir = Direction.Left;
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame) dir = Direction.Right;
-        if (Keyboard.current.upArrowKey.wasPressedThisFrame) dir = Direction.Up;
-        if (Keyboard.current.downArrowKey.wasPressedThisFrame) dir = Direction.Down;
-
-        if (!dir.HasValue) return;
-
-        Direction newDir = dir.Value;
-
-        // Última dirección prevista (si hay buffer, la última del buffer, si no, nextDirection)
-        Direction lastRelevant = (inputBuffer.Count > 0) ? LastInQueue(inputBuffer) : nextDirection;
-
-        // Evitar direcciones imposibles (180°)
-        if (AreOpposite(lastRelevant, newDir))
-            return;
-
-        // No dejar crecer el buffer infinitamente
-        if (inputBuffer.Count < maxBufferSize)
-            inputBuffer.Enqueue(newDir);
-
+        ManageInput();
 
 
     }
@@ -272,17 +258,36 @@ public class Snake : MonoBehaviour
         timeSinceLastInput += Time.deltaTime;
         if (inputBuffer.Count > 0)
         {
-            Direction lastExecutedDirection = GetDirectionFromVector(gridMoveDirectionVector);
-            Direction nextDirection = inputBuffer.Peek();
+            
+            
+            nextDirection = inputBuffer.Peek();
+            
 
-            if (!(lastExecutedDirection == Direction.Left && nextDirection == Direction.Right) &&
-                !(lastExecutedDirection == Direction.Right && nextDirection == Direction.Left) &&
-                !(lastExecutedDirection == Direction.Up && nextDirection == Direction.Down) &&
-                !(lastExecutedDirection == Direction.Down && nextDirection == Direction.Up))
+            if (!AreOpposite(nextDirection,lastDirection))
             {
                 gridMoveDirection = nextDirection;
 
-                
+                switch (gridMoveDirection)
+                {
+                    case Direction.Right:
+                        gridMoveDirectionVector = new Vector2Int(1, 0);
+                        
+                        break;
+                    case Direction.Left:
+                        gridMoveDirectionVector = new Vector2Int(-1, 0);
+                        
+                        break;
+                    case Direction.Up:
+                        gridMoveDirectionVector = new Vector2Int(0, 1);
+                        
+                        break;
+                    case Direction.Down:
+                        gridMoveDirectionVector = new Vector2Int(0, -1);
+                        
+                        break;
+                }
+
+
             }
         }
         if (timeSinceLastInput > gridMoveTimerMax)
@@ -393,6 +398,28 @@ public class Snake : MonoBehaviour
 
 
     }
+    private IEnumerator MoveSnakeBodyPart(SnakeBodyPart snakeBody,Vector2Int startPosition, Vector2Int targetPosition)
+    {
+        Vector3 startPos = new Vector3(startPosition.x, startPosition.y, 0);
+        Vector3 targetPos = new Vector3(targetPosition.x, targetPosition.y, 0);
+
+        for (float t = 0f; t < gridMoveTimerMax; t += Time.deltaTime)
+        {
+            if(snakeBody.GetSnakeBodyGameObject() != null)
+            {
+                float lerp = t / gridMoveTimerMax;
+                snakeBody.GetSnakeBodyGameObject().transform.position = Vector3.Lerp(startPos, targetPos, lerp);
+                yield return null;
+
+            }
+           
+        }
+        if(snakeBody.GetSnakeBodyGameObject() != null)
+        {
+            snakeBody.GetSnakeBodyGameObject().transform.position = targetPos;
+        }
+        
+    }
     private void UpdateSnakeBodyParts()
     {
 
@@ -402,8 +429,14 @@ public class Snake : MonoBehaviour
             if (snakeBodyPartsList.Count > 0)
             {
                 snakeBodyPartsList[i].SetSnakeMovePosition(snakeMovePositionList[i]);
+                Vector2Int startPosition = snakeBodyPartsList[i].GetSnakeMovePosition().GetGridPosition();
+                Vector2Int targetPosition = startPosition + snakeBodyPartsList[i].GetSnakeMovePosition().GetDirectionVector();
+                
+                StartCoroutine(MoveSnakeBodyPart(snakeBodyPartsList[i], startPosition, targetPosition));
+                
+                    
+                
             }
-
 
 
         }
@@ -543,15 +576,20 @@ public class Snake : MonoBehaviour
                     {
                         default:
 
-                            angle = 0; break;
-                        case Direction.Down:
-                            snakeBodySprite = rightUpCorner;
                             angle = 0;
+                            
+                            break;
+                        case Direction.Down:
 
+                            snakeBodySprite = rightUpCorner;
+                            
+                            angle = 0;
+                            
                             break;
                         case Direction.Up:
 
                             snakeBodySprite = rightDownCorner;
+                            
                             angle = 0;
 
                             break;
@@ -653,6 +691,18 @@ public class Snake : MonoBehaviour
         public Direction GetDirection()
         {
             return direction;
+        }
+        public Vector2Int GetDirectionVector()
+        {
+            switch (direction)
+            {
+                default: return new Vector2Int(1, 0);
+                case Direction.Right: return new Vector2Int(1, 0); 
+                case Direction.Left: return new Vector2Int(-1, 0); 
+                case Direction.Up: return new Vector2Int(0, 1); 
+                case Direction.Down: return new Vector2Int(0, -1); 
+            }
+            
         }
 
         public Direction GetPreviousDirection()

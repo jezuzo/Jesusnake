@@ -8,6 +8,8 @@ TagManager:
   - SnakeSegment
   - Border
   - Tail
+  - OptionsScreen
+  - MainScreen
   layers:
   - Default
   - TransparentFX

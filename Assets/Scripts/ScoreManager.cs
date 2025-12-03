@@ -9,18 +9,22 @@ public class ScoreManager : MonoBehaviour
     private int highScore;
     private void Start()
     {
+       
         scoreManager = this;
+
         if(PlayerPrefs.GetInt("FirstTime", 0) == 0)
         {
 
-            PlayerPrefs.SetInt("highScore", 0);
+            PlayerPrefs.SetInt($"highScore{PlayerPrefs.GetString("GameMode")}", 0);
+
+           
 
             // Guardamos para que no vuelva a pasar
             PlayerPrefs.SetInt("FirstTime", 1);
             PlayerPrefs.Save();
         }
         
-        highScore = PlayerPrefs.GetInt("highScore", 0);
+        highScore = PlayerPrefs.GetInt($"highScore{PlayerPrefs.GetString("GameMode")}", 0);
         PlayerPrefs.Save();
         GameAssets.gameAssets.highScoreText.text = highScore + "";
 
@@ -39,7 +43,7 @@ public class ScoreManager : MonoBehaviour
     public void setHighScore(int newHighScore)
     {
         highScore = newHighScore;
-        PlayerPrefs.SetInt("highScore", highScore);
+        PlayerPrefs.SetInt($"highScore{PlayerPrefs.GetString("GameMode")}", highScore);
         PlayerPrefs.Save();
         GameAssets.gameAssets.highScoreText.text = highScore + "";
     }
