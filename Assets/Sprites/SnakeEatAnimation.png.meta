@@ -1,28 +1,19 @@
 fileFormatVersion: 2
-guid: 11f6963c96745934db57268d89b09d2a
+guid: 0df99a3c3b089f940b05b9186c8d68cc
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8029628866282303079
-    second: Jesusnaket_0
+      213: 5463126259836157648
+    second: SnakeEatAnimation_0
   - first:
-      213: -7466943423708111317
-    second: Jesusnaket_1
+      213: -3909699618192761323
+    second: SnakeEatAnimation_1
   - first:
-      213: 8579895414735065867
-    second: Jesusnaket_2
+      213: 4425688931440461443
+    second: SnakeEatAnimation_2
   - first:
-      213: -9198533601500413480
-    second: Jesusnaket_3
-  - first:
-      213: -6871452379067282825
-    second: Jesusnaket_4
-  - first:
-      213: -2178182980966945002
-    second: Jesusnaket_5
-  - first:
-      213: -4646881768199598355
-    second: Jesusnaket_6
+      213: -9108447821206639221
+    second: SnakeEatAnimation_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -131,155 +122,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jesusnaket_0
+      name: SnakeEatAnimation_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 45
-        width: 18
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9915503c617019090800000000000000
-      internalID: -8029628866282303079
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jesusnaket_1
-      rect:
-        serializedVersion: 2
-        x: 31
-        y: 47
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b2e50f78486106890800000000000000
-      internalID: -7466943423708111317
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jesusnaket_2
-      rect:
-        serializedVersion: 2
-        x: 45
-        y: 47
-        width: 12
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b035945eb69e11770800000000000000
-      internalID: 8579895414735065867
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jesusnaket_3
-      rect:
-        serializedVersion: 2
-        x: 26
-        y: 25
+        x: 3
+        y: 0
         width: 13
-        height: 13
+        height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8d1c214ec6e385080800000000000000
-      internalID: -9198533601500413480
+      spriteID: 0de74a0736ce0db40800000000000000
+      internalID: 5463126259836157648
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_4
+      name: SnakeEatAnimation_1
       rect:
         serializedVersion: 2
-        x: 26
-        y: 13
+        x: 25
+        y: 0
         width: 13
-        height: 13
+        height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 77a8eaeb772b3a0a0800000000000000
-      internalID: -6871452379067282825
+      spriteID: 51ed32769e4fdb9c0800000000000000
+      internalID: -3909699618192761323
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_5
+      name: SnakeEatAnimation_2
       rect:
         serializedVersion: 2
-        x: 38
-        y: 25
+        x: 47
+        y: 0
         width: 13
-        height: 13
+        height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 61fe9ab8e1a85c1e0800000000000000
-      internalID: -2178182980966945002
+      spriteID: 38603e482a43b6d30800000000000000
+      internalID: 4425688931440461443
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_6
+      name: SnakeEatAnimation_3
       rect:
         serializedVersion: 2
-        x: 38
-        y: 13
+        x: 69
+        y: 0
         width: 13
-        height: 13
+        height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dee493de6a5f28fb0800000000000000
-      internalID: -4646881768199598355
+      spriteID: b8d2cc917fa489180800000000000000
+      internalID: -9108447821206639221
       vertices: []
       indices: 
       edges: []
@@ -288,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 3e1c2c350feee5a4bb2aa349aae4b4be
     internalID: 0
     vertices: []
     indices: 
@@ -298,13 +223,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Jesusnaket_0: -8029628866282303079
-      Jesusnaket_1: -7466943423708111317
-      Jesusnaket_2: 8579895414735065867
-      Jesusnaket_3: -9198533601500413480
-      Jesusnaket_4: -6871452379067282825
-      Jesusnaket_5: -2178182980966945002
-      Jesusnaket_6: -4646881768199598355
+      SnakeEatAnimation_0: 5463126259836157648
+      SnakeEatAnimation_1: -3909699618192761323
+      SnakeEatAnimation_2: 4425688931440461443
+      SnakeEatAnimation_3: -9108447821206639221
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
