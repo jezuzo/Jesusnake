@@ -1,28 +1,10 @@
 fileFormatVersion: 2
-guid: 11f6963c96745934db57268d89b09d2a
+guid: 27e3afe76adc5ea49b210c1530b776b2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8029628866282303079
-    second: Jesusnaket_0
-  - first:
-      213: -7466943423708111317
-    second: Jesusnaket_1
-  - first:
-      213: 8579895414735065867
-    second: Jesusnaket_2
-  - first:
-      213: -9198533601500413480
-    second: Jesusnaket_3
-  - first:
-      213: -6871452379067282825
-    second: Jesusnaket_4
-  - first:
-      213: -2178182980966945002
-    second: Jesusnaket_5
-  - first:
-      213: -4646881768199598355
-    second: Jesusnaket_6
+      213: -1401294862940619654
+    second: TongueAnimation_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -131,155 +113,111 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Jesusnaket_0
+      name: TongueAnimation_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 45
-        width: 18
-        height: 16
+        x: 2
+        y: 4
+        width: 6
+        height: 3
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9915503c617019090800000000000000
-      internalID: -8029628866282303079
+      spriteID: a7c38dc1fb99d8ce0800000000000000
+      internalID: -1401294862940619654
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_1
+      name: TongueAnimation_1
       rect:
         serializedVersion: 2
-        x: 31
-        y: 47
-        width: 12
-        height: 12
+        x: 2
+        y: 8
+        width: 6
+        height: 3
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b2e50f78486106890800000000000000
-      internalID: -7466943423708111317
+      spriteID: fa782c1b9e6312545844a2bcd17478e2
+      internalID: -526739386
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_2
+      name: TongueAnimation_2
       rect:
         serializedVersion: 2
-        x: 45
-        y: 47
-        width: 12
-        height: 12
+        x: 2
+        y: 12
+        width: 6
+        height: 3
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b035945eb69e11770800000000000000
-      internalID: 8579895414735065867
+      spriteID: 3c94dca4f5d199c4db8ea7237ddb0a9c
+      internalID: 740121974
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_3
+      name: TongueAnimation_3
       rect:
         serializedVersion: 2
-        x: 26
-        y: 25
-        width: 13
-        height: 13
+        x: 2
+        y: 16
+        width: 6
+        height: 3
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 8d1c214ec6e385080800000000000000
-      internalID: -9198533601500413480
+      spriteID: d857b4467e3e432449f97a53cb2b1231
+      internalID: -2030462906
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Jesusnaket_4
+      name: TongueAnimation_4
       rect:
         serializedVersion: 2
-        x: 26
-        y: 13
-        width: 13
-        height: 13
+        x: 2
+        y: 20
+        width: 6
+        height: 3
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 77a8eaeb772b3a0a0800000000000000
-      internalID: -6871452379067282825
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jesusnaket_5
-      rect:
-        serializedVersion: 2
-        x: 38
-        y: 25
-        width: 13
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 61fe9ab8e1a85c1e0800000000000000
-      internalID: -2178182980966945002
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Jesusnaket_6
-      rect:
-        serializedVersion: 2
-        x: 38
-        y: 13
-        width: 13
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dee493de6a5f28fb0800000000000000
-      internalID: -4646881768199598355
+      spriteID: 98e7740801873554ca7a207329ac6b1d
+      internalID: -1471448133
       vertices: []
       indices: 
       edges: []
@@ -288,7 +226,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b08e275b55e855040918f02a5e61834b
     internalID: 0
     vertices: []
     indices: 
@@ -298,13 +236,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Jesusnaket_0: -8029628866282303079
-      Jesusnaket_1: -7466943423708111317
-      Jesusnaket_2: 8579895414735065867
-      Jesusnaket_3: -9198533601500413480
-      Jesusnaket_4: -6871452379067282825
-      Jesusnaket_5: -2178182980966945002
-      Jesusnaket_6: -4646881768199598355
+      TongueAnimation_0: -1401294862940619654
+      TongueAnimation_1: -526739386
+      TongueAnimation_2: 740121974
+      TongueAnimation_3: -2030462906
+      TongueAnimation_4: -1471448133
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

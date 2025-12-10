@@ -22,6 +22,7 @@ public class LevelGrid
 
                 var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
                 var isBorder = (x == 0 || y == 0 || x == width-1 || y == height-1);
+                spawnedTile.GetComponent<SpriteRenderer>().sortingOrder = isBorder ? 1 : 0;
                 spawnedTile.Init(isOffset, isBorder);
             }
         }

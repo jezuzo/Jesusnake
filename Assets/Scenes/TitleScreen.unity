@@ -237,7 +237,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 255608675}
-  - component: {fileID: 255608674}
+  - component: {fileID: 255608676}
   m_Layer: 0
   m_Name: GameAssets
   m_TagString: Untagged
@@ -245,57 +245,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &255608674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 255608673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d0699758c71ee0459b0d97d98a9daf0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameAssets
-  snakeHeadSide: {fileID: 2247122123381275639, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  snakeBodySide: {fileID: 7643515942544648536, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  snakeTailSide: {fileID: -1319261234296012211, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  snakeBodyUpDown: {fileID: 1224271331, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  leftDownCorner: {fileID: -8756506484605053467, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  rightDownCorner: {fileID: -7181538959598357889, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  leftUpCorner: {fileID: -993897422, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  rightUpCorner: {fileID: 1479889406, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  upArrow: {fileID: -2429919002490121231, guid: f7e246a5f4ab32645884922098640939, type: 3}
-  downArrow: {fileID: 5635105361348811957, guid: f7e246a5f4ab32645884922098640939, type: 3}
-  leftArrow: {fileID: -2938970880757876879, guid: f7e246a5f4ab32645884922098640939, type: 3}
-  rightArrow: {fileID: 67926103340967526, guid: f7e246a5f4ab32645884922098640939, type: 3}
-  snakeHeadUp: {fileID: -4994040905844885478, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  snakeHeadDown: {fileID: -748927565, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  snakeTailUp: {fileID: 542911292, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  snakeTailDown: {fileID: 528250518651869363, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
-  apple: {fileID: -7832214784768987486, guid: 35eced6420e412e4885f467021827678, type: 3}
-  locker: {fileID: -3726076178923026443, guid: c9138ff18c3bff046be2dcf197a31277, type: 3}
-  key: {fileID: 519520332, guid: c9138ff18c3bff046be2dcf197a31277, type: 3}
-  highScoreArrows: {fileID: 3264602403859737234, guid: 54688c6826f903a40a623308a5a954d5, type: 3}
-  RandomHighScore: {fileID: -5692895459775510314, guid: aeec30aca2a5d6c479bf1038a9f73331, type: 3}
-  slowVelocity: {fileID: 1983449577553564915, guid: baa931f6ac373684fb30af6fda36742f, type: 3}
-  mediumVelocity: {fileID: 6926319859814968342, guid: aecd9725974cb4f4da84f3896bd9cdf9, type: 3}
-  highVelocity: {fileID: -2630654529906110996, guid: 855aa4dc4471c7845a484986d5f2383c, type: 3}
-  noObstacles: {fileID: -2469259900262424269, guid: 41fbb359c661fdf459f9d71cd736e7e0, type: 3}
-  yesObstacles: {fileID: 1777795195330942755, guid: 95d01cca37eba054ab49e0673d38ecb6, type: 3}
-  snakeBlue: {fileID: 8224303509530367803, guid: d3fcd1755174bf546bf4c285875a290e, type: 3}
-  snakeGreen: {fileID: -5117491078173530405, guid: 5924ace5a56f9d8428c925c23606aea9, type: 3}
-  snakePink: {fileID: -3897974899540069808, guid: 7afc5ed8b13627742becef4f812b49f0, type: 3}
-  snakeRed: {fileID: -666984363670518662, guid: cc8594f4a4d648f4eabb0f3f176c77cc, type: 3}
-  tile: {fileID: 4821833975945815745, guid: 4b0bbdcc629e95e4daf1979f10dbf6d2, type: 3}
-  parentTiles: {fileID: 0}
-  parentBodyParts: {fileID: 0}
-  scoreText: {fileID: 0}
-  highScoreText: {fileID: 0}
-  box: {fileID: 7499154508442906066, guid: 9a5820e5ff7ee3645ac6f13beeb9077e, type: 3}
-  boxUnlock: {fileID: -3468594879125706288, guid: 7955fe3d98e85fc4681c119316f038dc, type: 3}
-  obstacle: {fileID: 4160635012330822537, guid: 4464378ca09779449bdd6bfa8a752795, type: 3}
-  trophy: {fileID: 0}
 --- !u!4 &255608675
 Transform:
   m_ObjectHideFlags: 0
@@ -311,6 +260,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &255608676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255608673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd215ea3f7cc194c930453b2c86a1df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameAssetsTitleScreen
+  highScoreArrows: {fileID: 3264602403859737234, guid: 54688c6826f903a40a623308a5a954d5, type: 3}
+  randomHighScore: {fileID: -5692895459775510314, guid: aeec30aca2a5d6c479bf1038a9f73331, type: 3}
+  slowVelocity: {fileID: 1983449577553564915, guid: baa931f6ac373684fb30af6fda36742f, type: 3}
+  mediumVelocity: {fileID: 6926319859814968342, guid: aecd9725974cb4f4da84f3896bd9cdf9, type: 3}
+  highVelocity: {fileID: -2630654529906110996, guid: 855aa4dc4471c7845a484986d5f2383c, type: 3}
+  noObstacles: {fileID: -2469259900262424269, guid: 41fbb359c661fdf459f9d71cd736e7e0, type: 3}
+  yesObstacles: {fileID: 4160635012330822537, guid: 4464378ca09779449bdd6bfa8a752795, type: 3}
+  apple: {fileID: -7832214784768987486, guid: 35eced6420e412e4885f467021827678, type: 3}
+  locker: {fileID: -3726076178923026443, guid: c9138ff18c3bff046be2dcf197a31277, type: 3}
+  snakeBlue: {fileID: 8224303509530367803, guid: d3fcd1755174bf546bf4c285875a290e, type: 3}
+  snakeGreen: {fileID: -5117491078173530405, guid: 5924ace5a56f9d8428c925c23606aea9, type: 3}
+  snakePink: {fileID: -3897974899540069808, guid: 7afc5ed8b13627742becef4f812b49f0, type: 3}
+  snakeRed: {fileID: -666984363670518662, guid: cc8594f4a4d648f4eabb0f3f176c77cc, type: 3}
+  box: {fileID: 7499154508442906066, guid: 9a5820e5ff7ee3645ac6f13beeb9077e, type: 3}
 --- !u!1 &297464891
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,6 +513,14 @@ PrefabInstance:
     - target: {fileID: 5428910929658376901, guid: bc088fa574f62574cac930b29cea037a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5952267790395470877, guid: bc088fa574f62574cac930b29cea037a, type: 3}
+      propertyPath: m_Name
+      value: BotonCerrar
+      objectReference: {fileID: 0}
+    - target: {fileID: 8881650137066787528, guid: bc088fa574f62574cac930b29cea037a, type: 3}
+      propertyPath: m_Name
+      value: BotonJugar
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1047,7 +1030,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2247122123381275639, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
+  m_Sprite: {fileID: 1235782973, guid: 7e9e4e7883e10c34a959e68e67b02f26, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 1
@@ -1429,9 +1412,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 86618651}
     m_Modifications:
+    - target: {fileID: 36465864281739358, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonVelocidad
+      objectReference: {fileID: 0}
+    - target: {fileID: 638053120865068768, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonObstaculos
+      objectReference: {fileID: 0}
+    - target: {fileID: 2148912293118550420, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonBioma
+      objectReference: {fileID: 0}
     - target: {fileID: 2474568679879934097, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
       propertyPath: m_Name
       value: OptionsScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 2664173721459995169, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonAtras
       objectReference: {fileID: 0}
     - target: {fileID: 5170615033076318715, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1440,6 +1439,14 @@ PrefabInstance:
     - target: {fileID: 5170615033076318715, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 178
+      objectReference: {fileID: 0}
+    - target: {fileID: 5779494016824439824, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonJugar2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7163164880243653553, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonModo
       objectReference: {fileID: 0}
     - target: {fileID: 7461516447909481788, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
       propertyPath: m_Pivot.x
@@ -1520,6 +1527,14 @@ PrefabInstance:
     - target: {fileID: 7461516447909481788, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8299691803580051277, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonColor
+      objectReference: {fileID: 0}
+    - target: {fileID: 8464507212002427653, guid: 7e33cd61af51a3243b8e92ab96edb754, type: 3}
+      propertyPath: m_Name
+      value: BotonTablero
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
