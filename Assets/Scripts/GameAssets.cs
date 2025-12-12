@@ -17,6 +17,7 @@ public class GameAssets : MonoBehaviour
     public Sprite downArrow;
     public Sprite leftArrow;
     public Sprite rightArrow;
+    public Sprite snakeTongue;
     
     public Sprite apple;
     public Sprite locker;

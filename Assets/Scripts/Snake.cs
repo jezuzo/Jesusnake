@@ -32,12 +32,11 @@ public class Snake : MonoBehaviour
     private Direction lastDirection;
     private TrailRenderer bodyShadow;
     private TrailRenderer headShadow;
-    private float tongueTimer;
-    private float tongueOutRate;
+    
     private Vector3 eyeRightInitialPosition;
     private Vector3 eyeLeftInitialPosition;
-
-    public int maxBufferSize = 2;
+    
+    private bool isAlive = true;
 
 
     public void Setup(ObjectSpawner objectSpawner, LevelGrid levelGrid)
@@ -53,6 +52,7 @@ public class Snake : MonoBehaviour
 
     private IEnumerator Start()
     {
+        
         while (true)
         {
             //gridMoveDirection = nextDirection;
@@ -95,26 +95,33 @@ public class Snake : MonoBehaviour
             Vector3 startPos = transform.position;
             Vector2Int targetGrid = gridPosition + gridMoveDirectionVector;
             Vector3 targetPos = new Vector3(targetGrid.x, targetGrid.y, 0);
-        
+            
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
         
             objectSpawner.TrySnakeCollisionBox(targetGrid, gridMoveDirection, gridMoveDirectionVector);
             
+            
             for (float t = 0f; t < gridMoveTimerMax; t += Time.deltaTime)
             {
-               
-                float lerp = t / gridMoveTimerMax;
-                transform.position = Vector3.Lerp(startPos, targetPos, lerp);
+                if (isAlive)
+                {
+                    float lerp = t / gridMoveTimerMax;
+                    transform.position = Vector3.Lerp(startPos, targetPos, lerp);
+                    
+                }
+                
                 yield return null;
             }
-        
-            transform.position = targetPos;
-        
-            // #4 — Actualizar grid, cuerpo y colisiones
-            ManageGridMovement(targetGrid);
-            ManageCollisions(targetGrid);
-        
-            // #5 — Consumir SOLO UNA dirección del buffer y decidir nextDirection
+
+            transform.position = isAlive ? targetPos : new Vector3(transform.position.x, transform.position.y, 0);
+            if (isAlive)
+            {
+                ManageGridMovement(targetGrid);
+                ManageCollisions(targetGrid);
+                
+            }
+            
+            
             if (inputBuffer.Count > 0)
             {
                 Direction next = inputBuffer.Dequeue();
@@ -125,6 +132,29 @@ public class Snake : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void FreezeSnake()
+    {
+        isAlive = false;
+        
+        
+        GetComponent<Animator>().SetBool("SnakeEating",false);
+        GetComponent<Animator>().SetTrigger("isDeath");
+        
+        
+        
+        GetComponent<TrailRenderer>().autodestruct = false;
+        GetComponent<TrailRenderer>().time = Mathf.Infinity;
+        bodyShadow.autodestruct = true;
+        bodyShadow.time = Mathf.Infinity;
+        headShadow.autodestruct = true;
+        headShadow.time = Mathf.Infinity;
+        transform.GetChild(3).gameObject.SetActive(false);
+        transform.GetChild(4).gameObject.SetActive(false);
+        transform.GetChild(2).GetComponent<Animator>().SetTrigger("TongueDeath");
+
+
     }
     
     private void ManageCollisions(Vector2Int targetGrid)
@@ -145,7 +175,8 @@ public class Snake : MonoBehaviour
 
         if (collision == "Border" || snakeCollisionedSnake || collision == "Obstacle" || collision == "ChainedApple")
         {
-            ResetGame();
+            //ResetGame();
+            FreezeSnake();
         }
 
         if (snakeCollisionedSnake)
@@ -156,11 +187,13 @@ public class Snake : MonoBehaviour
 
     private void BeginGame()
     {
-        
+        transform.GetChild(3).gameObject.SetActive(true);
+        transform.GetChild(4).gameObject.SetActive(true);
         gridMoveTimerMax = PlayerPrefs.GetFloat("SnakeSpeed");
         gridPosition = new Vector2Int(width / 2, height / 2);
         transform.position = new Vector3(gridPosition.x, gridPosition.y, 0);
         tongueOutRate = UnityEngine.Random.Range(0f, 20f);
+        blinkRate = UnityEngine.Random.Range(0f, 10f);
         gridMoveDirection = Direction.Right;
         nextDirection = Direction.Right;
         gridMoveDirectionVector = new Vector2Int(1, 0);
@@ -196,12 +229,16 @@ public class Snake : MonoBehaviour
     }
     private void Update()
     {
-
+        if (!isAlive) return;
         ManageInput();
         TongueOut();
+        Blink();
         DoBugle();
+
     }
 
+    private float tongueTimer;
+    private float tongueOutRate;
     private void TongueOut()
     {
         tongueTimer += Time.deltaTime;
@@ -210,6 +247,18 @@ public class Snake : MonoBehaviour
         transform.GetChild(2).GetComponent<Animator>().SetTrigger("TongueOut");
         tongueOutRate = UnityEngine.Random.Range(0f, 20f);
     }
+
+    private float blinkTimer;
+    private float blinkRate;
+    private void Blink()
+    {
+        blinkTimer += Time.deltaTime;
+        if (!(blinkTimer > blinkRate)) return;
+        blinkTimer = 0f;
+        transform.GetChild(4).GetComponent<Animator>().SetTrigger("Blink");
+        blinkRate = UnityEngine.Random.Range(0f, 10f);
+        
+    }
     
     private float bulgeWidth = 1.2f;   // tamaño máximo de la protuberancia
     private float travelTime = 0.5f;   // cuánto tarda en recorrer el cuerpo
@@ -217,42 +266,70 @@ public class Snake : MonoBehaviour
     private float startPos = 0.05f;    // posición inicial de la bola (cerca de la cabeza)
     private float endPos = 1f;     
     private float normalWidth = 1f;
-    private float totalTime;
     private float fadeTime = 0.1f;
     private float baseSpread = 0.3f;    // spread base para serpiente pequeña
     private float baseTrailTime = 0.34f;
+    private bool isFading = false;        // si la curva actual está desapareciendo
+    private float fadeTimer = 0f;         // tiempo de fade de la curva actual
+    private bool pendingNewBulge = false; // si hay una nueva curva esperando
     private void DoBugle()
     {
+        TrailRenderer trail = GetComponent<TrailRenderer>();
+        float trailLength = trail.time;
+    
+        // Fade de la curva actual
+        if (isFading)
+        {
+            fadeTimer += Time.deltaTime;
+            float t = Mathf.Clamp01(fadeTimer / fadeTime);
+
+            // Reducimos el ancho suavemente
+            float peakWidth = Mathf.Lerp(bulgeWidth, normalWidth, t);
+
+            float center = Mathf.Clamp01(timerBugle * 2f / trailLength); // posición aproximada, da igual dónde
+            ApplyBulge(center, peakWidth);
+
+            if (t >= 1f)
+            {
+                // Fade completado
+                ResetCurve();
+                isFading = false;
+                timerBugle = -1f;
+
+                if (pendingNewBulge)
+                {
+                    StartNewBulge();
+                }
+            }
+
+            return;
+        }
+
+        // Curva normal
         if (timerBugle < 0f) return;
 
         timerBugle += Time.deltaTime;
 
-        float trailLength = transform.GetComponent<TrailRenderer>().time;
-        float speedUnits = 2f; // unidades del trail por segundo
+        float speedUnits = 2f;
         float maxTravelLength = trailLength * 0.6f;
-
         float posUnits = Mathf.Min(timerBugle * speedUnits, maxTravelLength);
         float peakPos = posUnits / trailLength;
 
-        float peakWidth;
-
+        float peakWidth2;
         if (timerBugle * speedUnits < maxTravelLength)
         {
-            // fase de recorrido
-            peakWidth = bulgeWidth;
+            peakWidth2 = bulgeWidth;
         }
         else
         {
-            // fade suave al final
             float t = (timerBugle * speedUnits - maxTravelLength) / fadeTime;
             t = Mathf.Clamp01(t);
-            peakWidth = Mathf.Lerp(bulgeWidth, normalWidth, t);
+            peakWidth2 = Mathf.Lerp(bulgeWidth, normalWidth, t);
         }
 
-        ApplyBulge(peakPos, peakWidth);
+        ApplyBulge(peakPos, peakWidth2);
 
-        // reiniciar si fade terminado
-        if (peakWidth <= normalWidth)
+        if (peakWidth2 <= normalWidth)
         {
             timerBugle = -1f;
             ResetCurve();
@@ -263,16 +340,27 @@ public class Snake : MonoBehaviour
     
     public void TriggerBulge()
     {
-        // calcular posiciones según tamaño actual de la serpiente
+        
+        if (timerBugle >= 0f)
+        {
+            // Hay curva activa → iniciar fade de la actual
+            isFading = true;
+            fadeTimer = 0f;
+            pendingNewBulge = true; // señalamos que queremos la nueva curva
+            return;
+        }
+
+        // No hay curva activa → iniciar normalmente
+        StartNewBulge();
+    }
+    private void StartNewBulge()
+    {
         startPos = 0.05f;
         endPos = 1f;
-
-        // calcular travelTime para velocidad constante
-        float distance = endPos - startPos;
-        travelTime = distance;
-        
-        totalTime = travelTime + fadeTime;
         timerBugle = 0f;
+        travelTime = endPos - startPos;
+        isFading = false;
+        pendingNewBulge = false;
     }
 
     void ApplyBulge(float center, float peak)
@@ -316,7 +404,11 @@ public class Snake : MonoBehaviour
     public void EatAnimation(Vector2Int appleGridPosition)
     {
         float dist = Vector2.Distance(new Vector2(transform.position.x,transform.position.y), appleGridPosition);
-        transform.GetComponent<Animator>().SetBool("SnakeEating", dist < 3f);
+        if (isAlive)
+        {
+            transform.GetComponent<Animator>().SetBool("SnakeEating", dist < 3f);
+        }
+        
     }
     private Vector3 lastOffsetRight;
     private Vector3 lastOffsetLeft;
@@ -367,7 +459,7 @@ public class Snake : MonoBehaviour
     
     private void ManageInput()
     {
-
+        
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
             
@@ -378,7 +470,6 @@ public class Snake : MonoBehaviour
         }
         else if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
         {
-            
             inputBuffer.Enqueue(Direction.Right);
             timeSinceLastInput = 0f;
 
@@ -387,7 +478,6 @@ public class Snake : MonoBehaviour
         }
         else if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
-            
             inputBuffer.Enqueue(Direction.Up);
             timeSinceLastInput = 0f;
 
@@ -396,7 +486,6 @@ public class Snake : MonoBehaviour
         }
         else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
         {
-            
             inputBuffer.Enqueue(Direction.Down);
             timeSinceLastInput = 0f;
 
@@ -442,11 +531,15 @@ public class Snake : MonoBehaviour
         {
             inputBuffer.Clear();
         }
-
-
+       
 
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log("Muerte");
+        FreezeSnake();
+    }
 
     private bool TrySnakeCollisionSnake()
     {
@@ -472,29 +565,19 @@ public class Snake : MonoBehaviour
 
     private void ManageGridMovement(Vector2Int targetPosition)
     {
-        
-       
-        
         SnakeMovePosition previousSnakeMovePosition = null;
         if (snakeMovePositionList.Count > 0)
         {
             previousSnakeMovePosition = snakeMovePositionList[0];
         }
-
         
         SnakeMovePosition snakeMovePosition =
             new SnakeMovePosition(gridPosition, gridMoveDirection, previousSnakeMovePosition);
         snakeMovePositionList.Insert(0, snakeMovePosition);
-
-        
         gridPosition = targetPosition;
-
         
         UpdateSnakeBodyParts();
-
-       
         
-
         if (snakeMovePositionList.Count >= snakeBodySize + 1)
         {
             snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
@@ -619,21 +702,16 @@ public class Snake : MonoBehaviour
         public SnakeBodyPart(int bodyIndex)
         {
 
-            snakeBodyGameObject = new GameObject("SnakeBody", typeof(SpriteRenderer));
+            snakeBodyGameObject = new GameObject("SnakeBody", typeof(SpriteRenderer),typeof(BoxCollider2D));
             snakeBodyGameObject.GetComponent<SpriteRenderer>().sortingOrder = -bodyIndex;
+            snakeBodyGameObject.GetComponent<BoxCollider2D>().isTrigger = true;
+            snakeBodyGameObject.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
 
             transform = snakeBodyGameObject.transform;
             transform.SetParent(GameAssets.gameAssets.parentBodyParts);
 
         }
-        private void SetSnakeBodySprite(Sprite sprite, bool flipX)
-        {
-            snakeBodySprite = sprite;
-            snakeBodyGameObject.GetComponent<SpriteRenderer>().sprite = snakeBodySprite;
-            snakeBodyGameObject.GetComponent<SpriteRenderer>().flipX = flipX;
-
-
-        }
+        
 
 
         public GameObject GetSnakeBodyGameObject()
@@ -649,7 +727,7 @@ public class Snake : MonoBehaviour
         {
             this.snakeMovePosition = snakeMovePosition;
             transform.position = new Vector3(snakeMovePosition.GetGridPosition().x, snakeMovePosition.GetGridPosition().y);
-            SetSnakeBodySprite(GameAssets.gameAssets.snakeBodySide, false);
+            
             
         }
 

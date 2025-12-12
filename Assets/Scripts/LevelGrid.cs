@@ -9,8 +9,6 @@ public class LevelGrid
     public int width;
     public int height;
     
-    
-
     public void GenerateGrid(int width, int height)
     {
         for (int x = 0; x < width; x++)
@@ -18,10 +16,18 @@ public class LevelGrid
             for (int y = 0; y < height; y++)
             {
                 var spawnedTile = GameObject.Instantiate(GameAssets.gameAssets.tile, new Vector3(x, y), Quaternion.identity, GameAssets.gameAssets.parentTiles);
+                
                 spawnedTile.name = $"Tile {x} {y}";
 
                 var isOffset = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
                 var isBorder = (x == 0 || y == 0 || x == width-1 || y == height-1);
+
+                if (isBorder)
+                {
+                    BoxCollider2D boxCollider2D = spawnedTile.gameObject.AddComponent<BoxCollider2D>();
+                    boxCollider2D.isTrigger = true;
+                }
+                
                 spawnedTile.GetComponent<SpriteRenderer>().sortingOrder = isBorder ? 1 : 0;
                 spawnedTile.Init(isOffset, isBorder);
             }
