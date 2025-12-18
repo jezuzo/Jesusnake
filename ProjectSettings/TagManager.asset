@@ -56,5 +56,8 @@ TagManager:
   - name: Snake
     uniqueID: 2487703479
     locked: 0
+  - name: ReplayScreen
+    uniqueID: 963206967
+    locked: 0
   m_RenderingLayers:
   - Default

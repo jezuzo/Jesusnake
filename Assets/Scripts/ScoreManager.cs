@@ -16,9 +16,7 @@ public class ScoreManager : MonoBehaviour
         {
 
             PlayerPrefs.SetInt($"highScore{PlayerPrefs.GetString("GameMode")}", 0);
-
-           
-
+            
             // Guardamos para que no vuelva a pasar
             PlayerPrefs.SetInt("FirstTime", 1);
             PlayerPrefs.Save();

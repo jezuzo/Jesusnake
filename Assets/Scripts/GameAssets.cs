@@ -35,5 +35,5 @@ public class GameAssets : MonoBehaviour
     public Sprite boxUnlock;
     public Sprite obstacle;
     public Image trophy;
-
+    public GameObject controls;
 }

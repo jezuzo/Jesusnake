@@ -34,6 +34,7 @@ public class LevelGrid
         }
         Camera.main.transform.position = new Vector3((float)width / 2 - 0.5f, (float)height / 2 - 0.5f,-10);
         Camera.main.orthographicSize = width/2 + 1;
+        
     }
     
     public LevelGrid(int width, int height)

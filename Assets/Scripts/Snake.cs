@@ -28,17 +28,17 @@ public class Snake : MonoBehaviour
     private List<SnakeMovePosition> snakeMovePositionList;
     private List<SnakeBodyPart> snakeBodyPartsList;
     private float timeSinceLastInput;
-    private Direction nextDirection; // la dirección que usarás en el próximo movimiento
+    private Direction nextDirection; 
     private Direction lastDirection;
     private TrailRenderer bodyShadow;
     private TrailRenderer headShadow;
-    
+    private TrailRenderer snakeBody;
     private Vector3 eyeRightInitialPosition;
     private Vector3 eyeLeftInitialPosition;
+    public bool isAlive = true;
+    public bool firstClick = false;
     
-    private bool isAlive = true;
-
-
+    
     public void Setup(ObjectSpawner objectSpawner, LevelGrid levelGrid)
     {
 
@@ -52,12 +52,12 @@ public class Snake : MonoBehaviour
 
     private IEnumerator Start()
     {
-        
+        yield return new WaitUntil(() => firstClick);
         while (true)
         {
+            
             //gridMoveDirection = nextDirection;
             lastDirection = gridMoveDirection;
-        
             switch (lastDirection)
             {
                 case Direction.Right:
@@ -95,8 +95,11 @@ public class Snake : MonoBehaviour
             Vector3 startPos = transform.position;
             Vector2Int targetGrid = gridPosition + gridMoveDirectionVector;
             Vector3 targetPos = new Vector3(targetGrid.x, targetGrid.y, 0);
+            if (isAlive)
+            {
+                transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
+            }
             
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
         
             objectSpawner.TrySnakeCollisionBox(targetGrid, gridMoveDirection, gridMoveDirectionVector);
             
@@ -114,12 +117,11 @@ public class Snake : MonoBehaviour
             }
 
             transform.position = isAlive ? targetPos : new Vector3(transform.position.x, transform.position.y, 0);
-            if (isAlive)
-            {
+            
                 ManageGridMovement(targetGrid);
                 ManageCollisions(targetGrid);
                 
-            }
+            
             
             
             if (inputBuffer.Count > 0)
@@ -133,28 +135,27 @@ public class Snake : MonoBehaviour
             }
         }
     }
-
-    private void FreezeSnake()
+    
+    public void FreezeSnake()
     {
         isAlive = false;
         
-        
         GetComponent<Animator>().SetBool("SnakeEating",false);
         GetComponent<Animator>().SetTrigger("isDeath");
-        
-        
-        
         GetComponent<TrailRenderer>().autodestruct = false;
         GetComponent<TrailRenderer>().time = Mathf.Infinity;
         bodyShadow.autodestruct = true;
         bodyShadow.time = Mathf.Infinity;
         headShadow.autodestruct = true;
         headShadow.time = Mathf.Infinity;
-        transform.GetChild(3).gameObject.SetActive(false);
-        transform.GetChild(4).gameObject.SetActive(false);
+        
         transform.GetChild(2).GetComponent<Animator>().SetTrigger("TongueDeath");
-
-
+        transform.GetChild(4).GetComponent<Animator>().SetTrigger("Death");
+        
+        Transform rightEye = transform.GetChild(3).GetChild(0);
+        Transform leftEye = transform.GetChild(3).GetChild(1);
+        rightEye.localPosition = new Vector3(-0.15f, 0.25f, 0f);
+        leftEye.localPosition = new Vector3(-0.15f, -0.25f, 0f);
     }
     
     private void ManageCollisions(Vector2Int targetGrid)
@@ -168,21 +169,32 @@ public class Snake : MonoBehaviour
             TriggerBulge();
             snakeBodySize++;
             CreateSnakeBody();
-            gameObject.GetComponent<TrailRenderer>().time = (snakeBodyPartsList.Count+1)*gridMoveTimerMax;
+            snakeBody.time = (snakeBodyPartsList.Count+1)*gridMoveTimerMax;
             bodyShadow.time = (snakeBodyPartsList.Count+1)*gridMoveTimerMax;
             ScoreManager.scoreManager.addScore(1);
         }
-
-        if (collision == "Border" || snakeCollisionedSnake || collision == "Obstacle" || collision == "ChainedApple")
-        {
-            //ResetGame();
-            FreezeSnake();
-        }
+        
 
         if (snakeCollisionedSnake)
         {
             Debug.Log("murió por serpiente");
         }
+    }
+    private IEnumerator InitializeTrail()
+    {
+        //snakeBody.Clear();
+
+        Vector3 headPos = new Vector3(gridPosition.x,gridPosition.y);
+        Vector3 dir = Vector3.right;
+        headShadow.emitting = false;
+
+        for (int i = 0; i < 2; i++)
+        {
+            transform.position = headPos + new Vector3(gridMoveDirectionVector.x,gridMoveDirectionVector.y) * i;
+            yield return null;
+        }
+
+        transform.position = headPos + new Vector3(gridMoveDirectionVector.x, gridMoveDirectionVector.y);
     }
 
     private void BeginGame()
@@ -190,30 +202,33 @@ public class Snake : MonoBehaviour
         transform.GetChild(3).gameObject.SetActive(true);
         transform.GetChild(4).gameObject.SetActive(true);
         gridMoveTimerMax = PlayerPrefs.GetFloat("SnakeSpeed");
-        gridPosition = new Vector2Int(width / 2, height / 2);
+        gridPosition = new Vector2Int(width / 2 - 2, height / 2);
         transform.position = new Vector3(gridPosition.x, gridPosition.y, 0);
         tongueOutRate = UnityEngine.Random.Range(0f, 20f);
         blinkRate = UnityEngine.Random.Range(0f, 10f);
         gridMoveDirection = Direction.Right;
         nextDirection = Direction.Right;
+        transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
         gridMoveDirectionVector = new Vector2Int(1, 0);
-
         eyeRightInitialPosition = new Vector3(-0.15f, 0.25f);
         eyeLeftInitialPosition = new Vector3(-0.15f, -0.25f);
-
         snakeMovePositionList = new List<SnakeMovePosition>();
         snakeBodyPartsList = new List<SnakeBodyPart>();
         snakeBodySize = 0;
         inputBuffer = new Queue<Direction>();
         InitialState();
-
-        var tr = gameObject.GetComponent<TrailRenderer>();
-        tr.emitting = true;
-        tr.time = 0.34f;
         bodyShadow = transform.GetChild(0).GetComponent<TrailRenderer>();
         headShadow = transform.GetChild(1).GetComponent<TrailRenderer>();
+        snakeBody = transform.GetComponent<TrailRenderer>();
+        StartCoroutine(InitializeTrail());
+        bodyShadow.time = 0.4f;
+        snakeBody.time = 0.4f;
         bodyShadow.emitting = true;
-        bodyShadow.time = 0.34f;
+        transform.GetChild(0).localPosition = new Vector3(0f, 0.2f, 0);
+        transform.GetChild(1).localPosition = new Vector3(0.1f, 0.2f, 0);
+        GameAssets.gameAssets.controls.SetActive(true);
+        
+        snakeBody.Clear();
         
         Debug.Log("Velocidad de la serpiente: " + PlayerPrefs.GetFloat("SnakeSpeed"));
         Debug.Log("Tamaño del tablero: " + PlayerPrefs.GetInt("TableSize"));
@@ -229,6 +244,7 @@ public class Snake : MonoBehaviour
     }
     private void Update()
     {
+        if(!firstClick) Time.timeScale = 0f;
         if (!isAlive) return;
         ManageInput();
         TongueOut();
@@ -404,21 +420,35 @@ public class Snake : MonoBehaviour
     public void EatAnimation(Vector2Int appleGridPosition)
     {
         float dist = Vector2.Distance(new Vector2(transform.position.x,transform.position.y), appleGridPosition);
-        if (isAlive)
-        {
-            transform.GetComponent<Animator>().SetBool("SnakeEating", dist < 3f);
-        }
         
+        if (!isAlive) return;
+        if(appleGridPosition == default)
+        {
+            transform.GetComponent<Animator>().SetBool("SnakeEating", false);
+            return;
+        }
+
+        if (dist < 3f)
+        {
+            transform.GetComponent<Animator>().SetBool("SnakeBox", false);
+            transform.GetComponent<Animator>().SetBool("SnakeBox", false);
+            
+        }
+        transform.GetComponent<Animator>().SetBool("SnakeEating", dist < 3f);
+        
+        
+
     }
     private Vector3 lastOffsetRight;
     private Vector3 lastOffsetLeft;
     
     public void EyesFollowingApple(Vector2Int appleGridPosition)
     {
-        float maxOffset = 0.05f;
-        
+        if (!isAlive) return;
         Transform rightEye = transform.GetChild(3).GetChild(0);
         Transform leftEye = transform.GetChild(3).GetChild(1);
+        
+        float maxOffset = 0.05f;
         
         // Convertimos la posición del target al espacio local del padre
         Vector3 localTargetPos = transform.InverseTransformPoint(new Vector3(appleGridPosition.x,appleGridPosition.y,0));
@@ -433,17 +463,12 @@ public class Snake : MonoBehaviour
             leftEye.localPosition = eyeLeftInitialPosition + lastOffsetLeft;
             return;
         }
-        
-        
-        
-
         // Offset limitado
         Vector3 offsetRight = dirRight * maxOffset;
         Vector3 offsetLeft = dirLeft * maxOffset;
         
         lastOffsetRight = offsetRight;
         lastOffsetLeft = offsetRight;
-        
         
         // Movemos el ojo respetando la rotación del padre
         rightEye.localPosition = eyeRightInitialPosition + offsetRight;
@@ -462,44 +487,45 @@ public class Snake : MonoBehaviour
         
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
-            
+            if (!firstClick) return;
             inputBuffer.Enqueue(Direction.Left);
             timeSinceLastInput = 0f;
-
-            
         }
         else if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
         {
+            if (!firstClick)
+            {
+                Time.timeScale = 1f;
+                //snakeBody.emitting = true;
+                snakeBody.time = (snakeBodyPartsList.Count+1)*gridMoveTimerMax;
+                bodyShadow.time = (snakeBodyPartsList.Count+1)*gridMoveTimerMax;
+                GameAssets.gameAssets.controls.SetActive(false);
+                firstClick = true;
+                
+            }
             inputBuffer.Enqueue(Direction.Right);
             timeSinceLastInput = 0f;
-
-
             
         }
         else if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
+            if (!firstClick) return;
             inputBuffer.Enqueue(Direction.Up);
             timeSinceLastInput = 0f;
-
-
             
         }
         else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
         {
+            if (!firstClick) return;
             inputBuffer.Enqueue(Direction.Down);
             timeSinceLastInput = 0f;
-
-
             
         }
         timeSinceLastInput += Time.deltaTime;
         if (inputBuffer.Count > 0)
         {
-            
-            
             nextDirection = inputBuffer.Peek();
             
-
             if (!AreOpposite(nextDirection,lastDirection))
             {
                 gridMoveDirection = nextDirection;
@@ -535,10 +561,12 @@ public class Snake : MonoBehaviour
 
     }
 
+    private bool detectedKey;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Muerte");
         FreezeSnake();
+        
     }
 
     private bool TrySnakeCollisionSnake()

@@ -130,6 +130,7 @@ public class ObjectSpawner : MonoBehaviour
     }
     private void Update()
     {
+        
         if (enableAppleArrows)
         {
             if (!enableRandomMode)
@@ -142,7 +143,11 @@ public class ObjectSpawner : MonoBehaviour
         }
         if (enableObstacles)
         {
-            EnableObstacles();
+            if (snake.firstClick)
+            {
+                EnableObstacles();
+            }
+            
         }
         if (enableChainedApples)
         {
@@ -169,12 +174,21 @@ public class ObjectSpawner : MonoBehaviour
             EnableNormalMode();
         }
 
-        foreach (Object appleObject in objectsList)
+
+        if (GetFullObjectsTypeList("Food").Count == 0 && GetFullObjectsTypeList("Box").Count != 0)
         {
-            if (appleObject.GetObjectType() != "Food") continue;
-            snake.EyesFollowingApple(appleObject.GetObjectGridPosition());
-            snake.EatAnimation(appleObject.GetObjectGridPosition());
+            snake.EatAnimation(default);
         }
+        else
+        {
+            foreach (Object appleObject in objectsList)
+            {
+                if (appleObject.GetObjectType() != "Food") continue;
+                snake.EatAnimation(appleObject.GetObjectGridPosition());
+                snake.EyesFollowingApple(appleObject.GetObjectGridPosition());
+            }
+        }
+        
         
        
     }
@@ -206,7 +220,7 @@ public class ObjectSpawner : MonoBehaviour
     }
     private void EnableObstacles()
     {
-
+        
         if (spawnTimer > spawnRate)
         {
             SpawnObject("Obstacle");
@@ -231,21 +245,27 @@ public class ObjectSpawner : MonoBehaviour
         
         foreach (var myObject in objectsList)
         {
-            if (myObject.GetObjectType() == "BoxUnlock" )
+            if (myObject.GetObjectType() == "BoxUnlock" || myObject.GetObjectType() == "Food")
             {
                 isBox = true;
             }
+
+            if (myObject.GetObjectType() == "Box")
+            {
+                snake.EyesFollowingApple(myObject.GetObjectGridPosition());
+            }
+            
         }
 
         if (isBox) return;
         if (!enableRandomMode)
         {
+            SpawnObject("Box");
             SpawnObject("BoxUnlock");
         }
         else
         {
-            Destroy(GetFullObjectsTypeList("Box")[0].GetObjectGameObject());
-            objectsList.Remove((GetFullObjectsTypeList("Box")[0]));
+            
             boxesEnabled = false;
             EnableRandomMode();
         }
@@ -266,7 +286,10 @@ public class ObjectSpawner : MonoBehaviour
             if (myObject.GetObjectType() == "Food" || myObject.GetObjectType()=="ChainedApple")
             {
                 isChainedApple = true;
+                snake.EyesFollowingApple(myObject.GetObjectGridPosition());
+                snake.EatAnimation(myObject.GetObjectGridPosition());
             }
+            
         }
 
         if (isChainedApple) return;
@@ -328,6 +351,8 @@ public class ObjectSpawner : MonoBehaviour
             if (myObject.GetObjectType() == "ArrowApple")
             {
                 isAppleArrow = true;
+                snake.EyesFollowingApple(myObject.GetObjectGridPosition());
+                snake.EatAnimation(myObject.GetObjectGridPosition());
             }
         }
 
@@ -350,7 +375,12 @@ public class ObjectSpawner : MonoBehaviour
         objectGameObject.GetComponent<SpriteRenderer>().sprite = sprite;
         objectGameObject.GetComponent<SpriteRenderer>().sortingOrder = sortOrder;
         objectGameObject.GetComponent<SpriteRenderer>().sortingLayerName = sortingLayerName;
-        
+        if (name == "ChainedApple" || name == "Obstacle")
+        {
+            BoxCollider2D boxCollider2D = objectGameObject.AddComponent<BoxCollider2D>();
+            boxCollider2D.isTrigger = true;
+            boxCollider2D.size = new Vector2(1, 1);
+        }
         objectGameObject.transform.position = new Vector3(position.x, position.y, 0);
         return objectGameObject;
     }
@@ -743,6 +773,7 @@ public class ObjectSpawner : MonoBehaviour
         if(myObject.GetObjectGameObject() != null)
         {
             myObject.SetObjectGridPosition(targetGrid);
+            snake.gameObject.transform.GetComponent<Animator>().SetBool("SnakeBox",false);
         }
     }
     
@@ -750,10 +781,18 @@ public class ObjectSpawner : MonoBehaviour
     public string TrySnakeCollisionObject(Vector2Int snakeGridPosition, Direction snakeGridMoveDirection, Vector2Int snakeGridMoveDirectionVector)
     {
         if (objectsList.Count <= 0) return ObjectCollisionBorder(snakeGridPosition) ? "Border" : "";
+        if (!snake.isAlive) return "";
         for (int i = 0; i < objectsList.Count; i++)
         {
-            if (objectsList[i].GetObjectGridPosition() != snakeGridPosition) continue;
             string objectType = objectsList[i].GetObjectType();
+            if ((objectType == "ChainedApple" || objectType == "Obstacle") &&
+                objectsList[i].GetObjectGridPosition() == snakeGridPosition + snakeGridMoveDirectionVector)
+            {
+                return objectType;
+            }
+            if (objectsList[i].GetObjectGridPosition() != snakeGridPosition) continue;
+            
+            
             switch (objectsList[i].GetObjectType())
             {
                 case "Food":
@@ -772,6 +811,7 @@ public class ObjectSpawner : MonoBehaviour
                                 || (objectsList[i].GetObjectGridPosition().y == objectsList[k].GetObjectGridPosition().y + 1 && objectsList[i].GetObjectGridPosition().x == objectsList[k].GetObjectGridPosition().x  )
                                 || (objectsList[i].GetObjectGridPosition().y == objectsList[k].GetObjectGridPosition().y - 1 && objectsList[i].GetObjectGridPosition().x == objectsList[k].GetObjectGridPosition().x  ))
                             {
+                                objectsList[k].GetObjectGameObject().GetComponent<BoxCollider2D>().enabled = false;
                                 objectsList[k].SetObjectSprite(GameAssets.gameAssets.apple);
                                 objectsList[k].SetObjectType("Food");
                                 
@@ -809,9 +849,10 @@ public class ObjectSpawner : MonoBehaviour
                 if (myObject.GetObjectType() == "ChainedApple" && secondObject.GetObjectType() == "Key" &&
                     myObject.GetObjectGridPosition() == secondObject.GetObjectGridPosition())
                 {
-                    
+                    myObject.GetObjectGameObject().GetComponent<BoxCollider2D>().enabled = false;
                     myObject.SetObjectSprite(GameAssets.gameAssets.apple);
                     myObject.SetObjectType("Food");
+                    
                     Destroy(secondObject.GetObjectGameObject());
                     objectsList.Remove(secondObject);
                     
@@ -822,23 +863,33 @@ public class ObjectSpawner : MonoBehaviour
 
     public void TrySnakeCollisionBox(Vector2Int snakeGridPosition, Direction snakeGridMoveDirection, Vector2Int snakeGridMoveDirectionVector)
     {
+        
         foreach (var myObject in objectsList)
         {
             if (myObject.GetObjectGridPosition() != snakeGridPosition) continue;
             string objectType = myObject.GetObjectType();
             if (objectType != "Box") continue;
+            
             if (objectsList.Count > 0)
             {
+                if (BoxCollisionSnake(snakeGridPosition+snakeGridMoveDirectionVector))
+                {
+                    snake.FreezeSnake();
+                    break;
+                }
+                snake.gameObject.transform.GetComponent<Animator>().SetBool("SnakeBox",true);
+                
                 StartCoroutine(MoveObject(myObject, snakeGridPosition, snakeGridPosition+snakeGridMoveDirectionVector));
             }
         }
+        
 
-        foreach (var myObject in objectsList)
+        foreach (var myObject in objectsList.ToList())
         {
             var objectType = myObject.GetObjectType();
             if (objectType != "Box") continue;
             if (objectsList.Count <= 0) continue;
-            foreach (var secondObject in objectsList)
+            foreach (var secondObject in objectsList.ToList())
             {
                 string secondObjectType = secondObject.GetObjectType();
                 if (secondObjectType == "BoxUnlock" && myObject.GetObjectGridPosition() == secondObject.GetObjectGridPosition())
@@ -846,9 +897,10 @@ public class ObjectSpawner : MonoBehaviour
                     secondObject.SetObjectSprite(GameAssets.gameAssets.apple);
                     secondObject.SetObjectType("Food");
                 }
-                if (((secondObjectType == "Obstacle" || secondObjectType == "ChainedApple" || secondObjectType == "BoxUnlock") && secondObject.GetObjectGridPosition() == myObject.GetObjectGridPosition()) ||
-                    ObjectCollisionBorder(myObject.GetObjectGridPosition()) || BoxCollisionSnake(myObject.GetObjectGridPosition()))
+                if ((((secondObjectType == "Obstacle" || secondObjectType == "ChainedApple") && secondObject.GetObjectGridPosition() == myObject.GetObjectGridPosition()) ||
+                    ObjectCollisionBorder(myObject.GetObjectGridPosition())))
                 {
+                    
                     Vector2Int boxGridPosition;
                     do
                     {
@@ -858,6 +910,16 @@ public class ObjectSpawner : MonoBehaviour
                     StartCoroutine(MoveObject(myObject, snakeGridPosition,boxGridPosition));
                     break;
                 }
+
+                if (secondObjectType == "BoxUnlock" &&
+                    secondObject.GetObjectGridPosition() == myObject.GetObjectGridPosition())
+                {
+                    Destroy(myObject.GetObjectGameObject());
+                    objectsList.Remove(myObject);
+                }
+                
+
+                
             }
         }
     }
