@@ -10,6 +10,7 @@ TagManager:
   - Tail
   - OptionsScreen
   - MainScreen
+  - DeathScreen
   layers:
   - Default
   - TransparentFX

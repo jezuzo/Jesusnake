@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1000814723065835693, guid: fba1684866ace064fbb1acef893873cf, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 7ad6c0b1a76389c42978e22fe9059823, type: 2}
     - target: {fileID: 4411403904769029058, guid: fba1684866ace064fbb1acef893873cf, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -49,6 +53,18 @@ PrefabInstance:
       value: 130
       objectReference: {fileID: 0}
     - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -82,7 +98,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -170
+      value: -243
       objectReference: {fileID: 0}
     - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -95,6 +111,10 @@ PrefabInstance:
     - target: {fileID: 6310108732634331661, guid: fba1684866ace064fbb1acef893873cf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8112753772343164800, guid: fba1684866ace064fbb1acef893873cf, type: 3}
+      propertyPath: m_text
+      value: AJUSTES
       objectReference: {fileID: 0}
     - target: {fileID: 8112753772343164800, guid: fba1684866ace064fbb1acef893873cf, type: 3}
       propertyPath: m_margin.x

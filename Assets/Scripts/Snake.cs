@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = System.Random;
+using TMPro;
+using UnityEngine.UI;
 
 public enum Direction
 {
@@ -37,6 +39,7 @@ public class Snake : MonoBehaviour
     private Vector3 eyeLeftInitialPosition;
     public bool isAlive = true;
     public bool firstClick = false;
+    private float timePlayed;
     
     
     public void Setup(ObjectSpawner objectSpawner, LevelGrid levelGrid)
@@ -136,8 +139,9 @@ public class Snake : MonoBehaviour
         }
     }
     
-    public void FreezeSnake()
+    public IEnumerator FreezeSnake()
     {
+        GameObject deathScreen = GameObject.FindGameObjectWithTag("DeathScreen");
         isAlive = false;
         
         GetComponent<Animator>().SetBool("SnakeEating",false);
@@ -156,6 +160,26 @@ public class Snake : MonoBehaviour
         Transform leftEye = transform.GetChild(3).GetChild(1);
         rightEye.localPosition = new Vector3(-0.15f, 0.25f, 0f);
         leftEye.localPosition = new Vector3(-0.15f, -0.25f, 0f);
+        
+        yield return new WaitForSeconds(2f);
+        
+        foreach (Transform child in deathScreen.GetComponentsInChildren<Transform>(true))
+        {
+            if (child.gameObject.name == "PanelAjustes") break;
+            child.gameObject.SetActive(true);
+        }
+        
+        int minutos = Mathf.FloorToInt(timePlayed / 60);
+        int segundos = Mathf.FloorToInt(timePlayed % 60);
+        
+        Transform replayScreen = deathScreen.transform.GetChild(1).GetChild(0);
+        replayScreen.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = ""+ScoreManager.scoreManager.GetScore();
+        replayScreen.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = ""+PlayerPrefs.GetInt($"highScore{PlayerPrefs.GetString("GameMode")}", 0);
+        replayScreen.GetChild(2).GetChild(1).GetComponent<TMP_Text>().text = $"{minutos:00}:{segundos:00}";
+        replayScreen.GetChild(1).GetChild(0).GetComponent<Image>().sprite = GameAssets.gameAssets.trophy.sprite;
+        replayScreen.GetChild(1).GetChild(0).GetComponent<Image>().rectTransform.sizeDelta = GameAssets.gameAssets.trophy.rectTransform.sizeDelta;
+
+
     }
     
     private void ManageCollisions(Vector2Int targetGrid)
@@ -199,6 +223,7 @@ public class Snake : MonoBehaviour
 
     private void BeginGame()
     {
+        
         transform.GetChild(3).gameObject.SetActive(true);
         transform.GetChild(4).gameObject.SetActive(true);
         gridMoveTimerMax = PlayerPrefs.GetFloat("SnakeSpeed");
@@ -229,11 +254,13 @@ public class Snake : MonoBehaviour
         GameAssets.gameAssets.controls.SetActive(true);
         
         snakeBody.Clear();
-        
+        timePlayed = 0f;
         Debug.Log("Velocidad de la serpiente: " + PlayerPrefs.GetFloat("SnakeSpeed"));
         Debug.Log("Tamaño del tablero: " + PlayerPrefs.GetInt("TableSize"));
         Debug.Log("Obstáculos: " + PlayerPrefs.GetInt("Obstacles"));
         Debug.Log("Modo de juego: " + PlayerPrefs.GetString("GameMode"));
+        
+        //ResetGame();
     }
 
 
@@ -250,6 +277,7 @@ public class Snake : MonoBehaviour
         TongueOut();
         Blink();
         DoBugle();
+        timePlayed+=Time.deltaTime;
 
     }
 
@@ -428,7 +456,23 @@ public class Snake : MonoBehaviour
             return;
         }
 
-        if (dist < 3f)
+        float distRef;
+        switch (PlayerPrefs.GetFloat("SnakeSpeed"))
+        {
+            default:
+                distRef = 3f;
+                break;
+            case 0.15f:
+                distRef = 3f;
+                break;
+            case 0.125f:
+                distRef = 4f;
+                break;
+            case 0.1f:
+                distRef = 6f;
+                break;
+        }
+        if (dist < distRef)
         {
             transform.GetComponent<Animator>().SetBool("SnakeBox", false);
             transform.GetComponent<Animator>().SetBool("SnakeBox", false);
@@ -565,7 +609,7 @@ public class Snake : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        FreezeSnake();
+        StartCoroutine(FreezeSnake());
         
     }
 
@@ -612,14 +656,6 @@ public class Snake : MonoBehaviour
         }
     }
     
-    private void QuitAction()
-    {
-        if (inputBuffer.Count > 0)
-        {
-            inputBuffer.Dequeue();
-        }
-
-    }
     private void CreateSnakeBody()
     {
         snakeBodyPartsList.Add(new SnakeBodyPart(snakeBodyPartsList.Count + 1));
@@ -637,11 +673,16 @@ public class Snake : MonoBehaviour
         snakeMovePositionList.Clear();
         snakeBodyPartsList.Clear();
         
-
-        BeginGame();
         SnakeMovePosition snakeMovePosition = new SnakeMovePosition(gridPosition, gridMoveDirection, null);
         snakeMovePositionList.Insert(0, snakeMovePosition);
         ScoreManager.scoreManager.setScore(0);
+        GameObject deathScreen = GameObject.FindGameObjectWithTag("DeathScreen");
+        foreach (Transform child in deathScreen.GetComponentsInChildren<Transform>(true))
+        {
+            if(child == transform) continue;
+            if (child.gameObject.name == "PanelAjustes") break;
+            child.gameObject.SetActive(false);
+        }
 
 
     }

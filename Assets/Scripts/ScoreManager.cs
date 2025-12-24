@@ -46,6 +46,11 @@ public class ScoreManager : MonoBehaviour
         GameAssets.gameAssets.highScoreText.text = highScore + "";
     }
 
+    public int GetScore()
+    {
+        return score;
+    }
+
     void Update()
     {
         if (score > highScore)
