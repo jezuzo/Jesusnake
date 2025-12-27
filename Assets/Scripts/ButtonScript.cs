@@ -102,7 +102,7 @@ public class ButtonScript : MonoBehaviour
         }else if (name == "ItchioButton")
         {
             yield return new WaitForSeconds(0.2f);
-            Application.OpenURL("https://github.com/jezuzo/Jesusnake");
+            Application.OpenURL("https://jesudev.itch.io/jesusnake");
             
         }else if (name == "CreditsButton")
         {
