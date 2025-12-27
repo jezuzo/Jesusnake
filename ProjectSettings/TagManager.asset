@@ -11,6 +11,8 @@ TagManager:
   - OptionsScreen
   - MainScreen
   - DeathScreen
+  - SoundManager
+  - CreditsScreen
   layers:
   - Default
   - TransparentFX

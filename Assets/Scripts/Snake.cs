@@ -42,6 +42,7 @@ public class Snake : MonoBehaviour
     private float timePlayed;
     
     
+    
     public void Setup(ObjectSpawner objectSpawner, LevelGrid levelGrid)
     {
 
@@ -100,6 +101,7 @@ public class Snake : MonoBehaviour
             Vector3 targetPos = new Vector3(targetGrid.x, targetGrid.y, 0);
             if (isAlive)
             {
+                
                 transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 180);
             }
             
@@ -120,13 +122,16 @@ public class Snake : MonoBehaviour
             }
 
             transform.position = isAlive ? targetPos : new Vector3(transform.position.x, transform.position.y, 0);
-            
+            if (isAlive)
+            {
                 ManageGridMovement(targetGrid);
                 ManageCollisions(targetGrid);
                 
+            }
+                
+                
             
-            
-            
+                
             if (inputBuffer.Count > 0)
             {
                 Direction next = inputBuffer.Dequeue();
@@ -138,31 +143,10 @@ public class Snake : MonoBehaviour
             }
         }
     }
-    
-    public IEnumerator FreezeSnake()
+
+    private void ActivateReplayScreen()
     {
         GameObject deathScreen = GameObject.FindGameObjectWithTag("DeathScreen");
-        isAlive = false;
-        
-        GetComponent<Animator>().SetBool("SnakeEating",false);
-        GetComponent<Animator>().SetTrigger("isDeath");
-        GetComponent<TrailRenderer>().autodestruct = false;
-        GetComponent<TrailRenderer>().time = Mathf.Infinity;
-        bodyShadow.autodestruct = true;
-        bodyShadow.time = Mathf.Infinity;
-        headShadow.autodestruct = true;
-        headShadow.time = Mathf.Infinity;
-        
-        transform.GetChild(2).GetComponent<Animator>().SetTrigger("TongueDeath");
-        transform.GetChild(4).GetComponent<Animator>().SetTrigger("Death");
-        
-        Transform rightEye = transform.GetChild(3).GetChild(0);
-        Transform leftEye = transform.GetChild(3).GetChild(1);
-        rightEye.localPosition = new Vector3(-0.15f, 0.25f, 0f);
-        leftEye.localPosition = new Vector3(-0.15f, -0.25f, 0f);
-        
-        yield return new WaitForSeconds(2f);
-        
         foreach (Transform child in deathScreen.GetComponentsInChildren<Transform>(true))
         {
             if (child.gameObject.name == "PanelAjustes") break;
@@ -177,8 +161,44 @@ public class Snake : MonoBehaviour
         replayScreen.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = ""+PlayerPrefs.GetInt($"highScore{PlayerPrefs.GetString("GameMode")}", 0);
         replayScreen.GetChild(2).GetChild(1).GetComponent<TMP_Text>().text = $"{minutos:00}:{segundos:00}";
         replayScreen.GetChild(1).GetChild(0).GetComponent<Image>().sprite = GameAssets.gameAssets.trophy.sprite;
-        replayScreen.GetChild(1).GetChild(0).GetComponent<Image>().rectTransform.sizeDelta = GameAssets.gameAssets.trophy.rectTransform.sizeDelta;
-
+        replayScreen.GetChild(1).GetChild(0).GetComponent<Image>().rectTransform.sizeDelta = GameAssets.gameAssets.trophy.rectTransform.sizeDelta*1.2f;
+        
+        PlayerPrefs.SetString("LastGameMode",PlayerPrefs.GetString("GameMode"));
+        PlayerPrefs.SetInt("LastObstacles",PlayerPrefs.GetInt("Obstacles")); 
+        PlayerPrefs.SetInt("LastTableSize",PlayerPrefs.GetInt("TableSize"));
+        PlayerPrefs.SetFloat("LastSnakeSpeed",PlayerPrefs.GetFloat("SnakeSpeed"));
+        
+    }
+    public IEnumerator FreezeSnake(bool characterDeath)
+    {
+        GetComponent<Animator>().SetBool("SnakeEating",false);
+        GetComponent<Animator>().SetBool("SnakeBox",false);
+        if (characterDeath)
+        {
+            GetComponent<Animator>().SetTrigger("isDeath");
+            SoundManager.soundManager.PlaySound(Audios.SnakeDeath);
+            transform.GetChild(2).GetComponent<Animator>().SetTrigger("TongueDeath");
+            transform.GetChild(4).GetComponent<Animator>().SetTrigger("Death");
+            Debug.Log(timeSinceLastInput);
+        }
+        
+        isAlive = false;
+        
+        
+        GetComponent<TrailRenderer>().autodestruct = false;
+        GetComponent<TrailRenderer>().time = Mathf.Infinity;
+        bodyShadow.autodestruct = true;
+        bodyShadow.time = Mathf.Infinity;
+        headShadow.autodestruct = true;
+        headShadow.time = Mathf.Infinity;
+        
+        Transform rightEye = transform.GetChild(3).GetChild(0);
+        Transform leftEye = transform.GetChild(3).GetChild(1);
+        rightEye.localPosition = new Vector3(-0.15f, 0.25f, 0f);
+        leftEye.localPosition = new Vector3(-0.15f, -0.25f, 0f);
+        
+        yield return new WaitForSeconds(2f);
+        ActivateReplayScreen();
 
     }
     
@@ -209,7 +229,6 @@ public class Snake : MonoBehaviour
         //snakeBody.Clear();
 
         Vector3 headPos = new Vector3(gridPosition.x,gridPosition.y);
-        Vector3 dir = Vector3.right;
         headShadow.emitting = false;
 
         for (int i = 0; i < 2; i++)
@@ -260,6 +279,20 @@ public class Snake : MonoBehaviour
         Debug.Log("Obstáculos: " + PlayerPrefs.GetInt("Obstacles"));
         Debug.Log("Modo de juego: " + PlayerPrefs.GetString("GameMode"));
         
+
+        if (PlayerPrefs.GetInt("LastObstacles") != PlayerPrefs.GetInt("Obstacles") 
+            || PlayerPrefs.GetString("LastGameMode") != PlayerPrefs.GetString("GameMode")
+            || PlayerPrefs.GetFloat("LastSnakeSpeed") != PlayerPrefs.GetFloat("SnakeSpeed") ||
+            PlayerPrefs.GetInt("LastTableSize") != PlayerPrefs.GetInt("TableSize"))
+        {
+            Debug.Log(PlayerPrefs.GetInt("LastObstacles") != PlayerPrefs.GetInt("Obstacles"));
+            Debug.Log(PlayerPrefs.GetString("LastGameMode") != PlayerPrefs.GetString("GameMode"));
+            Debug.Log(PlayerPrefs.GetFloat("LastSnakeSpeed") != PlayerPrefs.GetFloat("SnakeSpeed"));
+            Debug.Log(PlayerPrefs.GetInt("LastTableSize") != PlayerPrefs.GetInt("TableSize"));
+            
+            PlayerPrefs.SetInt($"highScore{PlayerPrefs.GetString("GameMode")}", 0);
+        }
+        
         //ResetGame();
     }
 
@@ -271,14 +304,26 @@ public class Snake : MonoBehaviour
     }
     private void Update()
     {
+        
+        
         if(!firstClick) Time.timeScale = 0f;
         if (!isAlive) return;
         ManageInput();
         TongueOut();
         Blink();
         DoBugle();
+        CheckVictory();
+        
         timePlayed+=Time.deltaTime;
 
+    }
+
+    private void CheckVictory()
+    {
+        if (snakeBodyPartsList.Count == width*height - 1)
+        {
+            StartCoroutine(FreezeSnake(false));
+        }
     }
 
     private float tongueTimer;
@@ -532,6 +577,10 @@ public class Snake : MonoBehaviour
         if (Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
             if (!firstClick) return;
+            if (lastDirection != Direction.Right && lastDirection != Direction.Left)
+            {
+                SoundManager.soundManager.PlaySound(Audios.SnakeMove);
+            }
             inputBuffer.Enqueue(Direction.Left);
             timeSinceLastInput = 0f;
         }
@@ -547,6 +596,12 @@ public class Snake : MonoBehaviour
                 firstClick = true;
                 
             }
+
+            if (lastDirection != Direction.Right && lastDirection != Direction.Left)
+            {
+                SoundManager.soundManager.PlaySound(Audios.SnakeMove);
+            }
+            
             inputBuffer.Enqueue(Direction.Right);
             timeSinceLastInput = 0f;
             
@@ -554,6 +609,10 @@ public class Snake : MonoBehaviour
         else if (Keyboard.current.upArrowKey.wasPressedThisFrame)
         {
             if (!firstClick) return;
+            if (lastDirection != Direction.Up && lastDirection != Direction.Down)
+            {
+                SoundManager.soundManager.PlaySound(Audios.SnakeMove);
+            }
             inputBuffer.Enqueue(Direction.Up);
             timeSinceLastInput = 0f;
             
@@ -561,6 +620,10 @@ public class Snake : MonoBehaviour
         else if (Keyboard.current.downArrowKey.wasPressedThisFrame)
         {
             if (!firstClick) return;
+            if (lastDirection != Direction.Up && lastDirection != Direction.Down)
+            {
+                SoundManager.soundManager.PlaySound(Audios.SnakeMove);
+            }
             inputBuffer.Enqueue(Direction.Down);
             timeSinceLastInput = 0f;
             
@@ -576,6 +639,7 @@ public class Snake : MonoBehaviour
 
                 switch (gridMoveDirection)
                 {
+                    
                     case Direction.Right:
                         gridMoveDirectionVector = new Vector2Int(1, 0);
                         
@@ -609,9 +673,10 @@ public class Snake : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        StartCoroutine(FreezeSnake());
+        StartCoroutine(FreezeSnake(true));
         
     }
+    
 
     private bool TrySnakeCollisionSnake()
     {

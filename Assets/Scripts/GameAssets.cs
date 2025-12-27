@@ -47,4 +47,6 @@ public class GameAssets : MonoBehaviour
     public Sprite snakePink;
     public Sprite snakeRed;
 
+    public RuntimeAnimatorController  objectAnimator;
+
 }

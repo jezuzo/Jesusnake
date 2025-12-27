@@ -122,6 +122,12 @@ public class ObjectSpawner : MonoBehaviour
             objectSprite = newObjectSprite;
             objectGameObject.GetComponent<SpriteRenderer>().sprite = objectSprite;
         }
+
+        public void SetAnimator(RuntimeAnimatorController animator)
+        {
+            objectGameObject.AddComponent<Animator>();
+            objectGameObject.GetComponent<Animator>().runtimeAnimatorController = animator;
+        }
         public void SetObjectType(string newType)
         {
             type = newType;
@@ -225,8 +231,8 @@ public class ObjectSpawner : MonoBehaviour
         {
             SpawnObject("Obstacle");
             spawnTimer = 0f;
-            Invoke(nameof(DeleteObstacle), 10f);
-            spawnRate = UnityEngine.Random.Range(spawnRateRef, spawnRateRef + 10f);
+            Invoke(nameof(DeleteObstacle), 15f);
+            spawnRate = UnityEngine.Random.Range(spawnRateRef, spawnRateRef + 15f);
         }
         spawnTimer += Time.deltaTime;
 
@@ -272,7 +278,7 @@ public class ObjectSpawner : MonoBehaviour
     }
     private void EnableChainedApples()
     {
-        TryKeyCollisionChainedApple();
+        //TryKeyCollisionChainedApple();
         bool isChainedApple = false;
         if (!chainedApplesEnabled)
         {
@@ -375,11 +381,18 @@ public class ObjectSpawner : MonoBehaviour
         objectGameObject.GetComponent<SpriteRenderer>().sprite = sprite;
         objectGameObject.GetComponent<SpriteRenderer>().sortingOrder = sortOrder;
         objectGameObject.GetComponent<SpriteRenderer>().sortingLayerName = sortingLayerName;
-        if (name == "ChainedApple" || name == "Obstacle")
+        if (name == "ChainedApple" || name == "Obstacle" || name == "Box")
         {
             BoxCollider2D boxCollider2D = objectGameObject.AddComponent<BoxCollider2D>();
             boxCollider2D.isTrigger = true;
+            
             boxCollider2D.size = new Vector2(1, 1);
+        }
+
+        if (name != "Box" && name != "BoxUnlock" && name != "Obstacle" && name!="ChainedApple")
+        {
+            Animator animator = objectGameObject.AddComponent<Animator>();
+            animator.runtimeAnimatorController = GameAssets.gameAssets.objectAnimator;
         }
         objectGameObject.transform.position = new Vector3(position.x, position.y, 0);
         return objectGameObject;
@@ -796,40 +809,34 @@ public class ObjectSpawner : MonoBehaviour
             switch (objectsList[i].GetObjectType())
             {
                 case "Food":
+                    SoundManager.soundManager.PlaySound(Audios.EatingApple);
                     Destroy(objectsList[i].GetObjectGameObject());
                     objectsList.Remove(objectsList[i]);
                     break;
                 case "Key":
                 {
+                    SoundManager.soundManager.PlaySound(Audios.PickupKey);
                     if (objectsList.Count > 0)
                     {
                         for (int k = 0; k < objectsList.Count; k++)
                         {
                             if (objectsList[k].GetObjectType() != "ChainedApple") continue;
-                            if ((objectsList[i].GetObjectGridPosition().x == objectsList[k].GetObjectGridPosition().x + 1 && objectsList[i].GetObjectGridPosition().y == objectsList[k].GetObjectGridPosition().y  )
-                                || (objectsList[i].GetObjectGridPosition().x == objectsList[k].GetObjectGridPosition().x - 1 && objectsList[i].GetObjectGridPosition().y == objectsList[k].GetObjectGridPosition().y  )
-                                || (objectsList[i].GetObjectGridPosition().y == objectsList[k].GetObjectGridPosition().y + 1 && objectsList[i].GetObjectGridPosition().x == objectsList[k].GetObjectGridPosition().x  )
-                                || (objectsList[i].GetObjectGridPosition().y == objectsList[k].GetObjectGridPosition().y - 1 && objectsList[i].GetObjectGridPosition().x == objectsList[k].GetObjectGridPosition().x  ))
-                            {
+                            
                                 objectsList[k].GetObjectGameObject().GetComponent<BoxCollider2D>().enabled = false;
                                 objectsList[k].SetObjectSprite(GameAssets.gameAssets.apple);
                                 objectsList[k].SetObjectType("Food");
-                                
+                                objectsList[k].SetAnimator(GameAssets.gameAssets.objectAnimator);
                                 Destroy(objectsList[i].GetObjectGameObject());
                                 objectsList.Remove(objectsList[i]);
                                 Debug.Log("aqui");
-                            }
-                            else
-                            {
-                                StartCoroutine(MoveObject(objectsList[i], objectsList[i].GetObjectGridPosition(),
-                                    objectsList[k].GetObjectGridPosition()));
-                            }
+                                
                             
                         }
                     }
                     break;
                 }
                 case "ArrowApple" when objectsList[i].GetArrowDirection() == snakeGridMoveDirection:
+                    SoundManager.soundManager.PlaySound(Audios.EatingApple);
                     Destroy(objectsList[i].GetObjectGameObject());
                     objectsList.Remove(objectsList[i]);
                     return "Food";
@@ -840,27 +847,6 @@ public class ObjectSpawner : MonoBehaviour
         return ObjectCollisionBorder(snakeGridPosition) ? "Border" : "";
     }
 
-    public void TryKeyCollisionChainedApple()
-    {
-        foreach (var myObject in objectsList.ToList())
-        {
-            foreach (var secondObject in objectsList.ToList())
-            {
-                if (myObject.GetObjectType() == "ChainedApple" && secondObject.GetObjectType() == "Key" &&
-                    myObject.GetObjectGridPosition() == secondObject.GetObjectGridPosition())
-                {
-                    myObject.GetObjectGameObject().GetComponent<BoxCollider2D>().enabled = false;
-                    myObject.SetObjectSprite(GameAssets.gameAssets.apple);
-                    myObject.SetObjectType("Food");
-                    
-                    Destroy(secondObject.GetObjectGameObject());
-                    objectsList.Remove(secondObject);
-                    
-                }
-            }
-        }
-    }
-
     public void TrySnakeCollisionBox(Vector2Int snakeGridPosition, Direction snakeGridMoveDirection, Vector2Int snakeGridMoveDirectionVector)
     {
         
@@ -868,13 +854,16 @@ public class ObjectSpawner : MonoBehaviour
         {
             if (myObject.GetObjectGridPosition() != snakeGridPosition) continue;
             string objectType = myObject.GetObjectType();
-            if (objectType != "Box") continue;
+            if (objectType != "Box")
+            {
+                continue;
+            }
             
             if (objectsList.Count > 0)
             {
                 if (BoxCollisionSnake(snakeGridPosition+snakeGridMoveDirectionVector))
                 {
-                    snake.FreezeSnake();
+                    snake.FreezeSnake(true);
                     break;
                 }
                 snake.gameObject.transform.GetComponent<Animator>().SetBool("SnakeBox",true);
@@ -896,6 +885,8 @@ public class ObjectSpawner : MonoBehaviour
                 {
                     secondObject.SetObjectSprite(GameAssets.gameAssets.apple);
                     secondObject.SetObjectType("Food");
+                    secondObject.SetAnimator(GameAssets.gameAssets.objectAnimator);
+                   
                 }
                 if ((((secondObjectType == "Obstacle" || secondObjectType == "ChainedApple") && secondObject.GetObjectGridPosition() == myObject.GetObjectGridPosition()) ||
                     ObjectCollisionBorder(myObject.GetObjectGridPosition())))
